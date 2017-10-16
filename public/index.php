@@ -63,10 +63,11 @@ if (isset($_POST['text']) && $_POST['text'] != '') {
 
 	$payload =
 		'{
+			"text": "Hi there - welcome to Zoho Poeple :)",
 			"response_type": "in_channel",
 			"attachments": [
 				{
-   					"text": "Hi there - welcome to Zoho Poeple :)",
+   					"text": "Please choose type of leave from the dropdown",
    					"fallback": "Please choose leave type to proceed",
 					"color": "#3AA3E3",
 					"attachment_type": "default",
@@ -74,7 +75,7 @@ if (isset($_POST['text']) && $_POST['text'] != '') {
 					"actions": [
 						{
 							"name": "leave_list",
-							"text": "Choose type of leave",
+							"text": "Select",
 							"type": "select"
 						}
 					]
@@ -93,4 +94,7 @@ if (isset($_POST['text']) && $_POST['text'] != '') {
 			'Content-Type' => 'application/json',
 		]
 	]);
+
+
+
 }
