@@ -56,7 +56,7 @@ if (isset($_POST['text']) && $_POST['text'] != '') {
 	$leaveTypes = array();
 	foreach ($results as $result) {
 		$val = new stdClass();
-		$val->text = $result->Name;
+		$val->text = $result->Name . " (" . $result->BalanceCount . " days available)";
 		$val->value = $result->Name;
 		array_push($leaveTypes, $val);
 	}
