@@ -21,9 +21,23 @@ if (isset($_POST['text']) && $_POST['text'] != '') {
     $respToken = explode("\n", $response->getBody()->getContents())[2];
     $authToken = substr($respToken, strpos($respToken, "=") + 1);
 
-    \Database\Repository::insertToken($db, $_POST['user_id'], $authToken);
+	try {
+		if($authToken === "INVALID_PASSWORD"){
+			throw new Exception("Invalid password - please try again");
+		} elseif($authToken === "NO_SUCH_USER"){
+			throw new Exception("Invalid username - please try again");
+		}
 
-    echo "*Your token has been successfully generated! Thanks for setting up the ZohoApp*";
+		\Database\Repository::insertToken($db, $_POST['user_id'], $authToken);
+
+		echo "*Your token has been successfully generated! Thanks for setting up the ZohoApp*";
+	} catch(PDOException $e){
+		echo $e->getMessage();
+	} catch(Exception $e){
+		echo $e->getMessage();
+	}
+
+
 } else {
     $ch = curl_init();
 
