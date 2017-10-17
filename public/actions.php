@@ -7,23 +7,7 @@ $token = $_ENV['TOKEN'];
 $choosenLeaveType = $payload->actions[0]->selected_options[0]->value;
 $actionTriggerId = $payload->trigger_id;
 
-$dialog = '{
-    "callback_id": "rydegegre",
-    "title": "Please enter the dates:",
-    "submit_label": "Request",
-    "elements": [
-        {
-            "type": "text",
-            "label": "From",
-            "name": "loc_origin"
-        },
-        {
-            "type": "text",
-            "label": "To",
-            "name": "loc_destination"
-        }
-    ]
-}';
+$dialog = \helpers\Dialog::generateDialog();
 
 $response = $client->request('POST', 'https://slack.com/api/dialog.open', [
 	'form_params' => [
