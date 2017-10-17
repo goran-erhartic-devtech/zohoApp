@@ -11,7 +11,7 @@ if (isset($_POST['text']) && $_POST['text'] != '') {
 
 	\Database\Repository::checkIfTokenGenerated($db);
 
-	$client = new \GuzzleHttp\Client([]);
+//	$client = new \GuzzleHttp\Client([]);
 	$response = $client->request('POST', 'https://accounts.zoho.com/apiauthtoken/nb/create', [
 		'form_params' => [
 			'SCOPE' => 'zohopeople/peopleapi',
@@ -47,7 +47,7 @@ if (isset($_POST['text']) && $_POST['text'] != '') {
 
 	$authToken = $getUser->getToken();
 	$userId = $getUser->getEmail();
-	$client = new \GuzzleHttp\Client([]);
+//	$client = new \GuzzleHttp\Client([]);
 	$url = "https://people.zoho.com/people/api/leave/getLeaveTypeDetails?authtoken={$authToken}&userId={$userId}";
 	$response = $client->request('GET', $url);
 
@@ -57,7 +57,7 @@ if (isset($_POST['text']) && $_POST['text'] != '') {
 	foreach ($results as $result) {
 		$val = new stdClass();
 		$val->text = $result->Name . " (" . $result->BalanceCount . " days available)";
-		$val->value = $result->Name;
+		$val->value = $result->Id;
 		array_push($leaveTypes, $val);
 	}
 
@@ -94,7 +94,4 @@ if (isset($_POST['text']) && $_POST['text'] != '') {
 			'Content-Type' => 'application/json',
 		]
 	]);
-
-
-
 }

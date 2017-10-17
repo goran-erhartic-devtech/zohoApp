@@ -7,3 +7,5 @@ require_once(__DIR__ . '/../database/conf.php');
 
 $db = \Database\Database::getInstance()->getConnection();
 
+$client = new \GuzzleHttp\Client([]);
+
