@@ -7,8 +7,6 @@ if (isset($_POST['text']) && $_POST['text'] != '') {
 	$username = $usernameAndPasswordArray[0];
 	$password = $usernameAndPasswordArray[1];
 
-	$aa = $_POST;
-
 	\Database\Repository::checkIfTokenGenerated($db);
 
 	$response = $client->request('POST', 'https://accounts.zoho.com/apiauthtoken/nb/create', [
