@@ -6,10 +6,17 @@ use models\User;
 
 class Repository
 {
-	public static function checkIfTokenGenerated(\PDO $db)
+    private $db;
+
+    public function __construct(\PDO $db)
+    {
+        $this->db = $db;
+    }
+
+    public function checkIfTokenGenerated()
 	{
 		try {
-			$checkUser = $db->prepare("SELECT * from credentials WHERE userid = :userid");
+			$checkUser = $this->db->prepare("SELECT * from credentials WHERE userid = :userid");
 			$checkUser->bindParam(':userid', $_POST['user_id']);
 			$checkUser->execute();
 			if ($checkUser->rowCount() > 0) {
@@ -20,9 +27,9 @@ class Repository
 		}
 	}
 
-	public static function insertToken(\PDO $db, $userid, $email, $authToken)
+	public function insertToken(string $userid, string $email, string $authToken)
 	{
-		$stmt = $db->prepare("INSERT INTO credentials (userid, email, token) VALUES (:userid, :email, :token)");
+		$stmt = $this->db->prepare("INSERT INTO credentials (userid, email, token) VALUES (:userid, :email, :token)");
 		$stmt->execute(array(
 			"userid" => $userid,
 			"email" => $email,
@@ -30,9 +37,9 @@ class Repository
 		));
 	}
 
-	public static function getUser(\PDO $db)
+	public function getUser()
 	{
-		$stmt = $db->prepare("SELECT * from credentials WHERE userid = :userid LIMIT 1");
+		$stmt = $this->db->prepare("SELECT * from credentials WHERE userid = :userid LIMIT 1");
 		$stmt->bindParam(':userid', $_POST['user_id']);
 		$stmt->execute();
 		$result = $stmt->fetch(\PDO::FETCH_ASSOC);
