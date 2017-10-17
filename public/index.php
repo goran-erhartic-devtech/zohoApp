@@ -11,7 +11,6 @@ if (isset($_POST['text']) && $_POST['text'] != '') {
 
 	\Database\Repository::checkIfTokenGenerated($db);
 
-//	$client = new \GuzzleHttp\Client([]);
 	$response = $client->request('POST', 'https://accounts.zoho.com/apiauthtoken/nb/create', [
 		'form_params' => [
 			'SCOPE' => 'zohopeople/peopleapi',
@@ -47,49 +46,15 @@ if (isset($_POST['text']) && $_POST['text'] != '') {
 
 	$authToken = $getUser->getToken();
 	$userId = $getUser->getEmail();
-//	$client = new \GuzzleHttp\Client([]);
+
 	$url = "https://people.zoho.com/people/api/leave/getLeaveTypeDetails?authtoken={$authToken}&userId={$userId}";
 	$response = $client->request('GET', $url);
-
 	$results = json_decode($response->getBody()->getContents())->response->result;
 
-	$leaveTypes = array();
-	foreach ($results as $result) {
-		$val = new stdClass();
-		$val->text = $result->Name . " (" . $result->BalanceCount . " days available)";
-		$val->value = $result->Id;
-		array_push($leaveTypes, $val);
-	}
+	$payload = \helpers\Payload::generatePayload($results);
 
-	$payload =
-		'{
-			"text": "Hi there - welcome to Zoho Poeple :)",
-			"response_type": "in_channel",
-			"attachments": [
-				{
-   					"text": "Please choose type of leave from the dropdown",
-   					"fallback": "Please choose leave type to proceed",
-					"color": "#3AA3E3",
-					"attachment_type": "default",
-					"callback_id": "leave_selection",
-					"actions": [
-						{
-							"name": "leave_list",
-							"text": "Select",
-							"type": "select"
-						}
-					]
-				}
-			]
-		}';
-
-	$dec = json_decode($payload);
-	$dec->attachments[0]->actions[0]->options = $leaveTypes;
-
-	$fin = json_encode($dec);
-
-	$response = $client->request('POST', "https://hooks.slack.com/services/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", [
-		'body' => $fin,
+	$response = $client->request('POST', $_ENV['WEBHOOK'], [
+		'body' => $payload,
 		'headers' => [
 			'Content-Type' => 'application/json',
 		]

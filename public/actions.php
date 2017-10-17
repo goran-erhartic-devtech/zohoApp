@@ -3,7 +3,7 @@ require_once(__DIR__ . '/../bootstrap/bootstrap.php');
 
 $payload = json_decode($_POST['payload']);
 
-$token = '';
+$token = $_ENV['TOKEN'];
 $choosenLeaveType = $payload->actions[0]->selected_options[0]->value;
 $actionTriggerId = $payload->trigger_id;
 
