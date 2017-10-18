@@ -8,6 +8,9 @@ require_once(__DIR__ . '/../database/conf.php');
 //Instantiate DB PDO
 $db = \Database\Database::getInstance()->getConnection();
 
+//Instantiate Repository class for DB communication
+$repository = new \Database\Repository($db);
+
 //Instantiate Guzzle
 $client = new \GuzzleHttp\Client([]);
 
