@@ -33,8 +33,8 @@ class Payload
 		$action['type'] = "select";
 		$action['options'] = $leaveTypes;
 
-        $attachment['actions'] = $action;
-        $payload['attachments'] = $attachment;
+        $attachment['actions'][] = $action;
+        $payload['attachments'][] = $attachment;
 
 		return json_encode($payload);
 	}
