@@ -7,6 +7,8 @@ class User
 	private $userId;
 	private $email;
 	private $token;
+	private $zohoUserId;
+	private $leaveType;
 
 	/**
 	 * @return mixed
@@ -64,5 +66,44 @@ class User
 
 		return $this;
 	}
+
+	/**
+	 * @return mixed
+	 */
+	public function getZohoUserId()
+	{
+		return $this->zohoUserId;
+	}
+
+	/**
+	 * @param mixed $zohoUserId
+	 * @return User
+	 */
+	public function setZohoUserId($zohoUserId)
+	{
+		$this->zohoUserId = $zohoUserId;
+
+		return $this;
+	}
+
+	/**
+	 * @return mixed
+	 */
+	public function getLeaveType()
+	{
+		return $this->leaveType;
+	}
+
+	/**
+	 * @param mixed $leaveType
+	 * @return User
+	 */
+	public function setLeaveType($leaveType)
+	{
+		$this->leaveType = $leaveType;
+
+		return $this;
+	}
+
 
 }

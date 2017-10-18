@@ -14,6 +14,9 @@ $repository = new \Database\Repository($db);
 //Instantiate Guzzle
 $client = new \GuzzleHttp\Client([]);
 
+//Instantiate XML Sabre parser
+$service = new Sabre\Xml\Service();
+
 //Read .env
 $dotenv = new \Dotenv\Dotenv(__DIR__ . '/../');
 $dotenv->load();

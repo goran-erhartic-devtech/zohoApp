@@ -20,7 +20,7 @@ class Payload
 		}
 
 		$payload['text'] = "Hi there - welcome to Zoho Poeple :)";
-		$payload['response_type'] = "in_channel";
+		$payload['response_type'] = "ephemeral";
 
 		$attachment['text'] = "Please choose type of leave from the dropdown";
 		$attachment['fallback'] = "Please choose leave type to proceed";
