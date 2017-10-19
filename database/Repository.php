@@ -38,7 +38,7 @@ class Repository
 		));
 	}
 
-	public function getUserById($userId)
+	public function getUserById(string $userId)
 	{
 		$stmt = $this->db->prepare("SELECT * from credentials WHERE userid = :userid LIMIT 1");
 		$stmt->bindParam(':userid', $userId);
@@ -59,7 +59,7 @@ class Repository
 		}
 	}
 
-	public function insertLeaveType($leaveType, $userId)
+	public function insertLeaveType(string $leaveType, string $userId)
 	{
 		$stmt = $this->db->prepare("UPDATE credentials SET leave_type = :leave_type WHERE userid = :id");
 		$stmt->execute(array(
