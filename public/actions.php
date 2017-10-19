@@ -36,7 +36,31 @@ if ($payload->callback_id === "leave_dates") {
 		->setTo($toDate)
 		->setLeaveType($employee->getLeaveType());
 
-	$xmlPayload = $XML->xmlSerialize($service);
+	$xmlPayload = $XML->createXMLData();
 
-	$opa = "ASDFASDFASDF";
+	$response = $client->request('POST', 'https://people.zoho.com/people/api/leave/records', [
+		'form_params' => [
+			'authtoken' => $employee->getToken(),
+			'xmlData' => $xmlPayload,
+		]
+	]);
+
+	$result = json_decode($response->getBody()->getContents(), true);
+
+	$dialogResponseChannel = $payload->channel->id;
+	$dialogResponseText = isset($result['message']['From']) ? $result['message']['From'] : $result['message'];
+	$dialogResponseUser = $payload->user->id;
+
+	$qq = $client->request('POST', 'https://slack.com/api/chat.postEphemeral', [
+		'form_params' => [
+			'token' => $_ENV['TOKEN'],
+			'channel' => $dialogResponseChannel,
+			'text' => $dialogResponseText,
+			'user' => $dialogResponseUser,
+			'as_user' => true
+		],
+		'headers' => [
+			'Content-Type' => 'application/x-www-form-urlencoded',
+		]
+	]);
 }

@@ -93,47 +93,52 @@ class XMLRequestModel
 		return $this;
 	}
 
-
-
-	public function xmlSerialize(Service $service)
+	public function createXMLData()
 	{
-		$result = $service->write('Request', [
-			'Record' =>
-				[
-					[
-						'name' => 'field',
-						'attributes' => [
-							'name' =>
-								'Employee_ID',
-						],
-						'value' => $this->employeeId,
-					],
-					[
-						'name' => 'field',
-						'attributes' => [
-							'name' =>
-								'From',
-						],
-						'value' => $this->from,
-					],
-					[
-						'name' => 'field',
-						'attributes' => [
-							'name' =>
-								'To',
-						],
-						'value' => $this->to,
-					],
-					[
-						'name' => 'field',
-						'attributes' => [
-							'name' =>
-								'Leavetype',
-						],
-						'value' => $this->leaveType,
-					],
-				]
-		]);
-	return $result;
+		$xmlString = "<Request><Record><field name='Employee_ID'>{$this->getEmployeeId()}</field><field name='From'>{$this->getFrom()}</field><field name='To'>{$this->getTo()}</field><field name='Leavetype'>{$this->getLeaveType()}</field></Record></Request>";
+
+		return $xmlString;
 	}
+
+//	public function xmlSerialize(Service $service)
+//	{
+//		$result = $service->write('Request', [
+//			'Record' =>
+//				[
+//					[
+//						'name' => 'field',
+//						'attributes' => [
+//							'name' =>
+//								'Employee_ID',
+//						],
+//						'value' => $this->employeeId,
+//					],
+//					[
+//						'name' => 'field',
+//						'attributes' => [
+//							'name' =>
+//								'From',
+//						],
+//						'value' => $this->from,
+//					],
+//					[
+//						'name' => 'field',
+//						'attributes' => [
+//							'name' =>
+//								'To',
+//						],
+//						'value' => $this->to,
+//					],
+//					[
+//						'name' => 'field',
+//						'attributes' => [
+//							'name' =>
+//								'Leavetype',
+//						],
+//						'value' => $this->leaveType,
+//					],
+//				]
+//		]);
+//	return $result;
+//	}
 }
