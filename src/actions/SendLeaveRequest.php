@@ -14,8 +14,8 @@ use src\models\XMLRequestModel;
 
 class SendLeaveRequest
 {
-	public function run(Client $client, $params, Repository $repo){
-
+	public function run(Client $client, $params, Repository $repo)
+	{
 		$fromDate = $params->submission->leave_from;
 		$toDate = $params->submission->leave_to;
 		$leaveReason = $params->submission->leave_reason;

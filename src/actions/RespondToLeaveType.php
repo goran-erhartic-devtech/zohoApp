@@ -12,7 +12,8 @@ use src\services\Repository;
 
 class RespondToLeaveType
 {
-	public function run($params, Repository $repo){
+	public function run($params, Repository $repo)
+	{
 		$choosenLeaveType = $params->actions[0]->selected_options[0]->value;
 		$userId = $params->user->id;
 		$repo->insertLeaveType($choosenLeaveType, $userId);

@@ -14,7 +14,7 @@ use src\services\contracts\iRepository;
 
 class Repository implements iRepository
 {
-	private  $db;
+	private $db;
 
 	public function __construct()
 	{
@@ -52,7 +52,7 @@ class Repository implements iRepository
 		));
 	}
 
-	public  function getUserById(string $userId)
+	public function getUserById(string $userId)
 	{
 		$stmt = $this->db->prepare("SELECT * from credentials WHERE userid = :userid LIMIT 1");
 		$stmt->bindParam(':userid', $userId);

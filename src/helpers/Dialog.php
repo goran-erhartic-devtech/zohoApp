@@ -10,7 +10,8 @@ namespace src\helpers;
 
 class Dialog
 {
-	public static function generateDialog(){
+	public static function generateDialog()
+	{
 		$dialog['callback_id'] = "leave_dates";
 		$dialog['title'] = "Please enter the dates:";
 		$dialog['submit_label'] = "Request";
@@ -33,7 +34,7 @@ class Dialog
 		$reasonForLeave['label'] = "Reason for leave:";
 		$reasonForLeave['name'] = "leave_reason";
 
-        $dialog['elements'] = array($dateFrom, $dateTo, $reasonForLeave);
+		$dialog['elements'] = array($dateFrom, $dateTo, $reasonForLeave);
 
 		return json_encode($dialog);
 	}
