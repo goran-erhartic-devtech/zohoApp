@@ -27,7 +27,13 @@ class Dialog
 		$dateTo['label'] = "To:";
 		$dateTo['name'] = "leave_to";
 
-        $dialog['elements'] = array($dateFrom, $dateTo);
+		$reasonForLeave['type'] = "textarea";
+		$reasonForLeave['placeholder'] = "Summer holiday";
+		$reasonForLeave['hint'] = "Please giva a short summary of reason for leave request";
+		$reasonForLeave['label'] = "Reason for leave:";
+		$reasonForLeave['name'] = "leave_reason";
+
+        $dialog['elements'] = array($dateFrom, $dateTo, $reasonForLeave);
 
 		return json_encode($dialog);
 	}

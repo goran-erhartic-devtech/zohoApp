@@ -5,11 +5,13 @@ $payload = json_decode($_POST['payload']);
 $userId = $payload->user->id;
 $token = $_ENV['TOKEN'];
 
+//Check/set if leave type has been selected
 if (!empty($payload->actions[0]->selected_options[0]->value)) {
 	$choosenLeaveType = $payload->actions[0]->selected_options[0]->value;
 	$repository->insertLeaveType($choosenLeaveType, $userId);
 }
 
+//After chosen leave type generate modal dialog
 if ($payload->callback_id === "leave_selection") {
 	$actionTriggerId = $payload->trigger_id;
 
@@ -24,9 +26,11 @@ if ($payload->callback_id === "leave_selection") {
 	]);
 }
 
+//After modal dialog submitted send request leave to Zoho API
 if ($payload->callback_id === "leave_dates") {
 	$fromDate = $payload->submission->leave_from;
 	$toDate = $payload->submission->leave_to;
+	$leaveReason = $payload->submission->leave_reason;
 
 	$employee = $repository->getUserById($userId);
 
@@ -34,7 +38,10 @@ if ($payload->callback_id === "leave_dates") {
 	$XML->setEmployeeId($employee->getZohoUserId())
 		->setFrom($fromDate)
 		->setTo($toDate)
-		->setLeaveType($employee->getLeaveType());
+		->setLeaveType($employee->getLeaveType())
+		->setReasonForLeave($leaveReason);
+
+//	$xmlPayload = $XML->xmlSerialize($service);
 
 	$xmlPayload = $XML->createXMLData();
 

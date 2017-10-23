@@ -27,14 +27,23 @@ class Repository
 		}
 	}
 
-	public function insertToken(string $userid, string $email, string $authToken, string $zoho_user_id)
+	public function insertToken(string $userid, string $email, string $authToken, array $zohoUserInfo)
 	{
-		$stmt = $this->db->prepare("INSERT INTO credentials (userid, email, token, zoho_user_id) VALUES (:userid, :email, :token, :zoho_user_id)");
+		$employeeZohoId = $zohoUserInfo['ownerID'];
+
+		$employeeReportingToArray = explode(' ', $zohoUserInfo['Reporting To']);
+		$superiorsMail = strtolower($employeeReportingToArray[0] . '.' . $employeeReportingToArray[1] . '@devtechhroup.com');
+//		$employeeReportingToId = end($employeeReportingToArray);
+
+//		$employeeReportingTo = array_values(array_slice(explode(' ', $zohoUserInfo['Reporting To']), -1))[0];
+
+		$stmt = $this->db->prepare("INSERT INTO credentials (userid, email, token, zoho_user_id, reporting_to) VALUES (:userid, :email, :token, :zoho_user_id, :reporting_to)");
 		$stmt->execute(array(
 			"userid" => $userid,
 			"email" => $email,
 			"token" => $authToken,
-			"zoho_user_id" => $zoho_user_id,
+			"zoho_user_id" => $employeeZohoId,
+			"reporting_to" => $superiorsMail,
 		));
 	}
 

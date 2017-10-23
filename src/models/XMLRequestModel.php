@@ -16,6 +16,7 @@ class XMLRequestModel
 	private $from;
 	private $to;
 	private $leaveType;
+	private $reasonForLeave;
 
 	/**
 	 * @return mixed
@@ -93,9 +94,28 @@ class XMLRequestModel
 		return $this;
 	}
 
+	/**
+	 * @return mixed
+	 */
+	public function getReasonForLeave()
+	{
+		return $this->reasonForLeave;
+	}
+
+	/**
+	 * @param mixed $reasonForLeave
+	 * @return XMLRequestModel
+	 */
+	public function setReasonForLeave($reasonForLeave)
+	{
+		$this->reasonForLeave = $reasonForLeave;
+
+		return $this;
+	}
+
 	public function createXMLData()
 	{
-		$xmlString = "<Request><Record><field name='Employee_ID'>{$this->getEmployeeId()}</field><field name='From'>{$this->getFrom()}</field><field name='To'>{$this->getTo()}</field><field name='Leavetype'>{$this->getLeaveType()}</field></Record></Request>";
+		$xmlString = "<Request><Record><field name='Employee_ID'>{$this->getEmployeeId()}</field><field name='From'>{$this->getFrom()}</field><field name='To'>{$this->getTo()}</field><field name='Leavetype'>{$this->getLeaveType()}</field><field name='Reasonforleave'>{$this->getReasonForLeave()}</field></Record></Request>";
 
 		return $xmlString;
 	}
@@ -137,8 +157,17 @@ class XMLRequestModel
 //						],
 //						'value' => $this->leaveType,
 //					],
+//					[
+//						'name' => 'field',
+//						'attributes' => [
+//							'name' =>
+//								'Reasonforleave',
+//						],
+//						'value' => $this->reasonForLeave,
+//					],
 //				]
 //		]);
-//	return $result;
+//
+//		return trim(preg_replace('/\s+/', '', $result));
 //	}
 }
