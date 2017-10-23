@@ -14,7 +14,7 @@ use src\models\XMLRequestModel;
 
 class SendLeaveRequest
 {
-	public function run(Client $client, $params, Repository $repo)
+	public function run(Client $client, \stdClass $params, Repository $repo)
 	{
 		//Prevent 3second timeout
 		http_response_code(200);

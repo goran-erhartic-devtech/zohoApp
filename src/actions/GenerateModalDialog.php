@@ -13,7 +13,7 @@ use src\helpers\Dialog;
 
 class GenerateModalDialog
 {
-	public function run(Client $client, $params)
+	public function run(Client $client, \stdClass $params)
 	{
 		$token = $_ENV['TOKEN'];
 

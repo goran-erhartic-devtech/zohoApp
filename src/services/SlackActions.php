@@ -41,21 +41,21 @@ class SlackActions implements iSlackActions
 		return $generateLeaveTypeDropdown->run($this->client, $this->repo);
 	}
 
-	public function respondToLeaveType($params)
+	public function respondToLeaveType(\stdClass $params)
 	{
 		$respondToLeaveType = new RespondToLeaveType();
 
 		return $respondToLeaveType->run($params, $this->repo);
 	}
 
-	public function generateModalDialog($params)
+	public function generateModalDialog(\stdClass $params)
 	{
 		$generateModalDialog = new GenerateModalDialog();
 
 		return $generateModalDialog->run($this->client, $params);
 	}
 
-	public function sendLeaveRequest($params)
+	public function sendLeaveRequest(\stdClass $params)
 	{
 		$sendLeaveRequest = new SendLeaveRequest();
 

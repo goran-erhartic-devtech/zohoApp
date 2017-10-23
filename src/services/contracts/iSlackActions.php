@@ -24,17 +24,17 @@ interface iSlackActions
 	 * @param $params
 	 * @return mixed
 	 */
-	public function respondToLeaveType($params);
+	public function respondToLeaveType(\stdClass $params);
 
 	/**
 	 * @param $params
 	 * @return mixed
 	 */
-	public function generateModalDialog($params);
+	public function generateModalDialog(\stdClass $params);
 
 	/**
 	 * @param $params
 	 * @return mixed
 	 */
-	public function sendLeaveRequest($params);
+	public function sendLeaveRequest(\stdClass $params);
 }
