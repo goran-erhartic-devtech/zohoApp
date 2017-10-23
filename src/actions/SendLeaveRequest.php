@@ -16,6 +16,9 @@ class SendLeaveRequest
 {
 	public function run(Client $client, $params, Repository $repo)
 	{
+		//Prevent 3second timeout
+		http_response_code(200);
+		
 		$fromDate = $params->submission->leave_from;
 		$toDate = $params->submission->leave_to;
 		$leaveReason = $params->submission->leave_reason;
