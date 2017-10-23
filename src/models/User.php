@@ -1,6 +1,12 @@
 <?php
+/**
+ * Created by PhpStorm.
+ * User: goran.erhartic
+ * Date: 18/10/2017
+ * Time: 12:33 PM
+ */
 
-namespace models;
+namespace src\models;
 
 class User
 {
@@ -124,7 +130,5 @@ class User
 
 		return $this;
 	}
-
-
 
 }

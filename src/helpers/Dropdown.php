@@ -6,11 +6,12 @@
  * Time: 2:36 PM
  */
 
-namespace helpers;
+namespace src\helpers;
 
-class Payload
+class Dropdown
 {
-	public static function generatePayload($results){
+	public static function generatePayload($results)
+	{
 		$leaveTypes = array();
 		foreach ($results as $result) {
 			$val = new \stdClass();
@@ -33,8 +34,8 @@ class Payload
 		$action['type'] = "select";
 		$action['options'] = $leaveTypes;
 
-        $attachment['actions'][] = $action;
-        $payload['attachments'][] = $attachment;
+		$attachment['actions'][] = $action;
+		$payload['attachments'][] = $attachment;
 
 		return json_encode($payload);
 	}
