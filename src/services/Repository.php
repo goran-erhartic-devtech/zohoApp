@@ -1,16 +1,18 @@
 <?php
 
-namespace Database;
+namespace src\services;
 
-use models\User;
+use src\models\User;
+use src\DI\Database;
+use src\services\contracts\iRepository;
 
-class Repository
+class Repository implements iRepository
 {
-	private $db;
+	private  $db;
 
-	public function __construct(\PDO $db)
+	public function __construct()
 	{
-		$this->db = $db;
+		$this->db = Database::getInstance()->getConnection();
 	}
 
 	public function checkIfTokenGenerated()
@@ -33,9 +35,6 @@ class Repository
 
 		$employeeReportingToArray = explode(' ', $zohoUserInfo['Reporting To']);
 		$superiorsMail = strtolower($employeeReportingToArray[0] . '.' . $employeeReportingToArray[1] . '@devtechhroup.com');
-//		$employeeReportingToId = end($employeeReportingToArray);
-
-//		$employeeReportingTo = array_values(array_slice(explode(' ', $zohoUserInfo['Reporting To']), -1))[0];
 
 		$stmt = $this->db->prepare("INSERT INTO credentials (userid, email, token, zoho_user_id, reporting_to) VALUES (:userid, :email, :token, :zoho_user_id, :reporting_to)");
 		$stmt->execute(array(
@@ -47,7 +46,7 @@ class Repository
 		));
 	}
 
-	public function getUserById(string $userId)
+	public  function getUserById(string $userId)
 	{
 		$stmt = $this->db->prepare("SELECT * from credentials WHERE userid = :userid LIMIT 1");
 		$stmt->bindParam(':userid', $userId);

@@ -6,9 +6,7 @@
  * Time: 12:33 PM
  */
 
-namespace models;
-
-use Sabre\Xml\Service;
+namespace src\models;
 
 class XMLRequestModel
 {

@@ -6,7 +6,7 @@
  * Time: 4:00 PM
  */
 
-namespace helpers;
+namespace src\helpers;
 
 class Dialog
 {

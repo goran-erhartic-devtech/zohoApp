@@ -6,9 +6,9 @@
  * Time: 2:36 PM
  */
 
-namespace helpers;
+namespace src\helpers;
 
-class Payload
+class Dropdown
 {
 	public static function generatePayload($results){
 		$leaveTypes = array();
