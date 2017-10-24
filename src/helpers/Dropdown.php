@@ -25,7 +25,7 @@ class Dropdown
 
 		$attachment['text'] = "Please choose type of leave from the dropdown";
 		$attachment['fallback'] = "Please choose leave type to proceed";
-		$attachment['color'] = "#3AA3E3";
+		$attachment['color'] = "#551A8B";
 		$attachment['attachment_type'] = "default";
 		$attachment['callback_id'] = "leave_selection";
 
