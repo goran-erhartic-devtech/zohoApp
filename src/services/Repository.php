@@ -38,9 +38,7 @@ class Repository implements iRepository
 	public function insertToken(string $userid, string $email, string $authToken, array $zohoUserInfo)
 	{
 		$employeeZohoId = $zohoUserInfo['ownerID'];
-
-		$employeeReportingToArray = explode(' ', $zohoUserInfo['Reporting To']);
-		$superiorsMail = strtolower($employeeReportingToArray[0] . '.' . $employeeReportingToArray[1] . '@devtechhroup.com');
+		$superiorsMail = $zohoUserInfo['superiorIM'];
 
 		$stmt = $this->db->prepare("INSERT INTO credentials (userid, email, token, zoho_user_id, reporting_to) VALUES (:userid, :email, :token, :zoho_user_id, :reporting_to)");
 		$stmt->execute(array(

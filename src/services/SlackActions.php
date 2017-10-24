@@ -14,6 +14,7 @@ use src\actions\GenerateLeaveTypeDropdown;
 use src\actions\GenerateModalDialog;
 use src\actions\RespondToLeaveType;
 use src\actions\SendLeaveRequest;
+use src\helpers\GetSuperiorsIM;
 use src\services\contracts\iSlackActions;
 
 class SlackActions implements iSlackActions
@@ -60,5 +61,12 @@ class SlackActions implements iSlackActions
 		$sendLeaveRequest = new SendLeaveRequest();
 
 		return $sendLeaveRequest->run($this->client, $params, $this->repo);
+	}
+
+	public function getSuperiorsIM(string $mail)
+	{
+		$getSuperiorsIM = new GetSuperiorsIM();
+
+		return $getSuperiorsIM->getSuperiorsIM($this->client, $mail);
 	}
 }

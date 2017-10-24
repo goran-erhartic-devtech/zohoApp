@@ -16,6 +16,7 @@ class RespondToLeaveType
 	{
 		$choosenLeaveType = $params->actions[0]->selected_options[0]->value;
 		$userId = $params->user->id;
+
 		$repo->insertLeaveType($choosenLeaveType, $userId);
 
 		return true;

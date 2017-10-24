@@ -8,6 +8,7 @@
 
 namespace src\actions;
 
+use src\DI\Container;
 use src\services\Repository;
 use GuzzleHttp\Client;
 
@@ -49,6 +50,15 @@ class GenerateAuthToken
 			$url = "https://people.zoho.com/people/api/forms/P_EmployeeView/records?authtoken={$authToken}&searchColumn=EMPLOYEEMAILALIAS&searchValue={$username}";
 			$response = $client->request('GET', $url);
 			$employeeZohoInfo = json_decode($response->getBody()->getContents(), true)[0];
+
+			$employeeReportingToArray = explode(' ', $employeeZohoInfo['Reporting To']);
+//			$superiorsMail = strtolower($employeeReportingToArray[0] . '.' . $employeeReportingToArray[1] . '@devtechhroup.com');
+
+			//TODO delete this - ONLY for testing - use above
+			$superiorsMail = strtolower($employeeReportingToArray[0] . '.ns@gmail.com');
+
+			$employeeZohoInfo['superiorIM'] = Container::getInstance()->getSuperiorsIM($superiorsMail);
+
 
 			//Store the token and user info in DB
 			$repo->insertToken($_POST['user_id'], $username, $authToken, $employeeZohoInfo);
