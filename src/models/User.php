@@ -15,7 +15,7 @@ class User
 	private $token;
 	private $zohoUserId;
 	private $leaveType;
-	private $leaveReason;
+	private $reportingTo;
 
 	/**
 	 * @return mixed
@@ -115,20 +115,21 @@ class User
 	/**
 	 * @return mixed
 	 */
-	public function getLeaveReason()
+	public function getReportingTo()
 	{
-		return $this->leaveReason;
+		return $this->reportingTo;
 	}
 
 	/**
-	 * @param mixed $leaveReason
+	 * @param mixed $reportingTo
 	 * @return User
 	 */
-	public function setLeaveReason($leaveReason)
+	public function setReportingTo($reportingTo)
 	{
-		$this->leaveReason = $leaveReason;
+		$this->reportingTo = $reportingTo;
 
 		return $this;
 	}
+
 
 }

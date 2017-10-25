@@ -63,7 +63,8 @@ class Repository implements iRepository
 				->setEmail($result['email'])
 				->setToken($result['token'])
 				->setZohoUserId($result['zoho_user_id'])
-				->setLeaveType($result['leave_type']);
+				->setLeaveType($result['leave_type'])
+				->setReportingTo($result['reporting_to']);
 
 			return $newUser;
 		} else {

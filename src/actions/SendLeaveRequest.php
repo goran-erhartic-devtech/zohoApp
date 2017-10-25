@@ -17,9 +17,6 @@ class SendLeaveRequest
 {
 	public function run(Client $client, \stdClass $params, Repository $repo)
 	{
-		//Prevent 3second timeout
-		http_response_code(200);
-
 		$fromDate = $params->submission->leave_from;
 		$toDate = $params->submission->leave_to;
 		$leaveReason = $params->submission->leave_reason;
@@ -47,15 +44,7 @@ class SendLeaveRequest
 		$result = json_decode($response->getBody()->getContents(), true);
 
 		$dialogResponseChannel = $params->channel->id;
-
-		if(isset($result['pkId'])){
-			$dialogResponseText = "Leave request has been sent to your DM";
-		} elseif(isset($result['message']['From'])) {
-			$dialogResponseText = $result['message']['From'];
-		} else {
-			$dialogResponseText = $result[0]['message'][0]['From'];
-		}
-		
+		$dialogResponseText = isset($result['pkId']) ? "Leave request has been sent to your DM for approval" : (isset($result['message']['From']) ? $result['message']['From'] : $result[0]['message'][0]['From']);
 		$dialogResponseUser = $params->user->id;
 
 		//Response message to Slack user
@@ -91,7 +80,7 @@ class SendLeaveRequest
 			$client->request('POST', 'https://slack.com/api/chat.postMessage', [
 				'form_params' => [
 					'token' => $_ENV['TOKEN'],
-					'channel' => 'D7J8GTHGX', //to-do create repo action to retrieve DMs ID
+					'channel' => $employee->getReportingTo(),
 					'text' => "New leave request from: {$params->user->name}",
 					'attachments' => "[{$text}]",
 					'username' => "ZohoApp",

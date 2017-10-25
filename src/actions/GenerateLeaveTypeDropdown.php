@@ -22,6 +22,14 @@ class GenerateLeaveTypeDropdown
 			die($e->getMessage());
 		}
 
+		//Timeout workaround
+		$client->requestAsync('POST', $_POST['response_url'], [
+			'body' => '{"text": " "}',
+			'headers' => [
+				'Content-Type' => 'application/json',
+			]
+		])->wait();
+
 		$authToken = $getUser->getToken();
 		$userId = $getUser->getEmail();
 

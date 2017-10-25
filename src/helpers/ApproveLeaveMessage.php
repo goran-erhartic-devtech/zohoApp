@@ -29,6 +29,7 @@ class ApproveLeaveMessage
 		$action1['text'] = "Approve";
 		$action1['type'] = "button";
 		$action1['value'] = 'yes';
+		$action1['style'] = "primary";
 
 		$action2['name'] = "button";
 		$action2['text'] = "Decline";
