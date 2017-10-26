@@ -16,6 +16,25 @@ class GenerateAuthToken
 {
 	public function run(Client $client, Repository $repo)
 	{
+		//Timeout workaround
+		ob_start();
+		$client->requestAsync('POST', $_POST['response_url'], [
+			'body' => '{"text": " "}',
+			'headers' => [
+				'Content-Type' => 'application/json',
+			]
+		])->wait();
+		$size = ob_get_length();
+		header("Content-Length: $size");
+		header('Connection: close');
+
+		// flush all output
+		ob_end_flush();
+		ob_flush();
+		flush();
+		session_write_close();
+		//End timeout workaround
+
 		//Get email and password from users input
 		$usernameAndPasswordArray = explode(" ", $_POST['text']);
 		$username = $usernameAndPasswordArray[0];
@@ -42,9 +61,16 @@ class GenerateAuthToken
 				throw new \Exception("*ERROR*: _Invalid password - please try again_");
 			} elseif ($authToken === "NO_SUCH_USER") {
 				throw new \Exception("*ERROR*: _Invalid username - please try again_");
+			} elseif ($authToken === "INVALID_CREDENTIALS") {
+				throw new \Exception("*ERROR*: _Invalid credentials - please check your email and password try again_");
 			}
 
-			echo "*Your token has been successfully generated! Thanks for setting up the ZohoApp*";
+			$client->request('POST', $_POST['response_url'], [
+				'body' => '{"text": "*Your token has been successfully generated! Thanks for setting up the ZohoApp*"}',
+				'headers' => [
+					'Content-Type' => 'application/json',
+				]
+			]);
 
 			//Get Zoho info for this Slack user
 			$url = "https://people.zoho.com/people/api/forms/P_EmployeeView/records?authtoken={$authToken}&searchColumn=EMPLOYEEMAILALIAS&searchValue={$username}";
@@ -63,9 +89,21 @@ class GenerateAuthToken
 			//Store the token and user info in DB
 			$repo->insertToken($_POST['user_id'], $username, $authToken, $employeeZohoInfo);
 		} catch (\PDOException $e) {
-			echo $e->getMessage();
+			$text = ['text' => $e->getMessage()];
+			$client->request('POST', $_POST['response_url'], [
+				'body' => json_encode($text),
+				'headers' => [
+					'Content-Type' => 'application/json',
+				]
+			]);
 		} catch (\Exception $e) {
-			echo $e->getMessage();
+			$text = ['text' => $e->getMessage()];
+			$client->request('POST', $_POST['response_url'], [
+				'body' => json_encode($text),
+				'headers' => [
+					'Content-Type' => 'application/json',
+				]
+			]);
 		}
 	}
 }

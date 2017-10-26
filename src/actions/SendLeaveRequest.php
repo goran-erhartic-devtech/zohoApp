@@ -17,6 +17,31 @@ class SendLeaveRequest
 {
 	public function run(Client $client, \stdClass $params, Repository $repo)
 	{
+		//Timeout workaround
+		ob_start();
+		$client->requestAsync('POST', 'https://slack.com/api/chat.postEphemeral', [
+			'form_params' => [
+				'token' => $_ENV['TOKEN'],
+				'channel' => $params->channel->id,
+				'text' => " ",
+				'user' => $params->user->id,
+				'as_user' => false
+			],
+			'headers' => [
+				'Content-Type' => 'application/x-www-form-urlencoded',
+			]
+		])->wait();
+		$size = ob_get_length();
+		header("Content-Length: $size");
+		header('Connection: close');
+
+		// flush all output
+		ob_end_flush();
+		ob_flush();
+		flush();
+		session_write_close();
+		//End timeout workaround
+
 		$fromDate = $params->submission->leave_from;
 		$toDate = $params->submission->leave_to;
 		$leaveReason = $params->submission->leave_reason;
