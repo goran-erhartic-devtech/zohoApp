@@ -18,29 +18,7 @@ class SendLeaveRequest
 	public function run(Client $client, \stdClass $params, Repository $repo)
 	{
 		//Timeout workaround
-		ob_start();
-		$client->requestAsync('POST', 'https://slack.com/api/chat.postEphemeral', [
-			'form_params' => [
-				'token' => $_ENV['TOKEN'],
-				'channel' => $params->channel->id,
-				'text' => " ",
-				'user' => $params->user->id,
-				'as_user' => false
-			],
-			'headers' => [
-				'Content-Type' => 'application/x-www-form-urlencoded',
-			]
-		])->wait();
-		$size = ob_get_length();
-		header("Content-Length: $size");
-		header('Connection: close');
-
-		// flush all output
-		ob_end_flush();
-		ob_flush();
-		flush();
-		session_write_close();
-		//End timeout workaround
+		$this->timeoutWorkaround($client, $params);
 
 		$fromDate = $params->submission->leave_from;
 		$toDate = $params->submission->leave_to;
@@ -65,7 +43,6 @@ class SendLeaveRequest
 				'xmlData' => $xmlPayload,
 			]
 		]);
-
 		$result = json_decode($response->getBody()->getContents(), true);
 
 		$dialogResponseChannel = $params->channel->id;
@@ -92,6 +69,8 @@ class SendLeaveRequest
 			$url = "https://people.zoho.com/people/api/leave/getLeaveTypeDetails?authtoken={$employee->getToken()}&userId={$employee->getZohoUserId()}";
 			$response = $client->request('GET', $url);
 			$allLeaves = json_decode($response->getBody()->getContents())->response->result;
+
+			//Get name of applied leave
 			$leaveName = '';
 			foreach ($allLeaves as $leave) {
 				if ($leave->Id === $employee->getLeaveType()) {
@@ -102,6 +81,7 @@ class SendLeaveRequest
 
 			$text = ApproveLeaveMessage::generateMessage($params, $leaveName);
 
+			//Send PM to DM
 			$client->request('POST', 'https://slack.com/api/chat.postMessage', [
 				'form_params' => [
 					'token' => $_ENV['TOKEN'],
@@ -116,5 +96,36 @@ class SendLeaveRequest
 				]
 			]);
 		}
+	}
+
+	/**
+	 * @param Client $client
+	 * @param \stdClass $params
+	 */
+	private function timeoutWorkaround(Client $client, \stdClass $params)
+	{
+		ob_start();
+		$client->requestAsync('POST', 'https://slack.com/api/chat.postEphemeral', [
+			'form_params' => [
+				'token' => $_ENV['TOKEN'],
+				'channel' => $params->channel->id,
+				'text' => " ",
+				'user' => $params->user->id,
+				'as_user' => false
+			],
+			'headers' => [
+				'Content-Type' => 'application/x-www-form-urlencoded',
+			]
+		])->wait();
+		$size = ob_get_length();
+		header("Content-Length: $size");
+		header('Connection: close');
+
+		// flush all output
+		ob_end_flush();
+		ob_flush();
+		flush();
+		session_write_close();
+		//End timeout workaround
 	}
 }

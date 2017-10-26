@@ -10,6 +10,7 @@ namespace src\actions;
 
 use GuzzleHttp\Client;
 use src\helpers\Dropdown;
+use src\helpers\TimeoutWorkaround;
 use src\services\Repository;
 
 class GenerateLeaveTypeDropdown
@@ -23,23 +24,7 @@ class GenerateLeaveTypeDropdown
 		}
 
 		//Timeout workaround
-		ob_start();
-		$client->requestAsync('POST', $_POST['response_url'], [
-			'body' => '{"text": " "}',
-			'headers' => [
-				'Content-Type' => 'application/json',
-			]
-		])->wait();
-		$size = ob_get_length();
-		header("Content-Length: $size");
-		header('Connection: close');
-
-		// flush all output
-		ob_end_flush();
-		ob_flush();
-		flush();
-		session_write_close();
-		//End timeout workaround
+		TimeoutWorkaround::execute($client, $_POST['response_url'], " ");
 
 		$authToken = $getUser->getToken();
 		$userId = $getUser->getEmail();

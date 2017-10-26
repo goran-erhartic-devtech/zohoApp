@@ -17,13 +17,13 @@ class Dialog
 		$dialog['submit_label'] = "Request";
 
 		$dateFrom['type'] = "text";
-		$dateFrom['placeholder'] = "DD/MM/YYYY";
+		$dateFrom['placeholder'] = "DD-MM-YYYY";
 		$dateFrom['hint'] = "Please enter the start date of your leave according to shown format";
 		$dateFrom['label'] = "From:";
 		$dateFrom['name'] = "leave_from";
 
 		$dateTo['type'] = "text";
-		$dateTo['placeholder'] = "DD/MM/YYYY";
+		$dateTo['placeholder'] = "DD-MM-YYYY";
 		$dateTo['hint'] = "Please enter the end date of your leave according to shown format";
 		$dateTo['label'] = "To:";
 		$dateTo['name'] = "leave_to";

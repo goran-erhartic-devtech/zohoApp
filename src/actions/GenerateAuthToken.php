@@ -9,6 +9,7 @@
 namespace src\actions;
 
 use src\DI\Container;
+use src\helpers\TimeoutWorkaround;
 use src\services\Repository;
 use GuzzleHttp\Client;
 
@@ -17,29 +18,27 @@ class GenerateAuthToken
 	public function run(Client $client, Repository $repo)
 	{
 		//Timeout workaround
-		ob_start();
-		$client->requestAsync('POST', $_POST['response_url'], [
-			'body' => '{"text": " "}',
-			'headers' => [
-				'Content-Type' => 'application/json',
-			]
-		])->wait();
-		$size = ob_get_length();
-		header("Content-Length: $size");
-		header('Connection: close');
-
-		// flush all output
-		ob_end_flush();
-		ob_flush();
-		flush();
-		session_write_close();
-		//End timeout workaround
+		TimeoutWorkaround::execute($client, $_POST['response_url'], " ");
 
 		//Get email and password from users input
-		$usernameAndPasswordArray = explode(" ", $_POST['text']);
-		$username = $usernameAndPasswordArray[0];
-		$password = $usernameAndPasswordArray[1];
+		try {
+			$usernameAndPasswordArray = explode(" ", $_POST['text']);
+			$username = $usernameAndPasswordArray[0];
+			$password = $usernameAndPasswordArray[1];
 
+			if (empty($password)) {
+				throw new \Exception("*ERROR*: _Invalid action_");
+			}
+		} catch (\Exception $e) {
+			$text = ['text' => $e->getMessage()];
+			$client->request('POST', $_POST['response_url'], [
+				'body' => json_encode($text),
+				'headers' => [
+					'Content-Type' => 'application/json',
+				]
+			]);
+			die();
+		}
 		//Check against DB if token has already been generated
 		$repo->checkIfTokenGenerated();
 
@@ -84,7 +83,6 @@ class GenerateAuthToken
 			$superiorsMail = strtolower($employeeReportingToArray[0] . '.ns@gmail.com');
 
 			$employeeZohoInfo['superiorIM'] = Container::getInstance()->getSuperiorsIM($superiorsMail);
-
 
 			//Store the token and user info in DB
 			$repo->insertToken($_POST['user_id'], $username, $authToken, $employeeZohoInfo);
