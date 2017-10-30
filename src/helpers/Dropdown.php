@@ -8,13 +8,15 @@
 
 namespace src\helpers;
 
+use src\models\LeaveType;
+
 class Dropdown
 {
 	public static function generatePayload($results)
 	{
 		$leaveTypes = array();
 		foreach ($results as $result) {
-			$val = new \stdClass();
+			$val = new LeaveType();
 			$val->text = $result->Name . " (" . $result->BalanceCount . " days available)";
 			$val->value = $result->Id;
 			array_push($leaveTypes, $val);
