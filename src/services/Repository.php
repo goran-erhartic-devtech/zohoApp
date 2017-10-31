@@ -8,6 +8,7 @@
 
 namespace src\services;
 
+use src\helpers\ExceptionHandler;
 use src\models\User;
 use src\DI\Database;
 use src\services\contracts\iRepository;
@@ -28,10 +29,10 @@ class Repository implements iRepository
 			$checkUser->bindParam(':userid', $_POST['user_id']);
 			$checkUser->execute();
 			if ($checkUser->rowCount() > 0) {
-				throw new \PDOException("Token generated already");
+				throw new ExceptionHandler("Token generated already");
 			}
-		} catch (\PDOException $e) {
-			die($e->getMessage());
+		} catch (ExceptionHandler $e) {
+			return $e->execute();
 		}
 	}
 
@@ -68,7 +69,7 @@ class Repository implements iRepository
 
 			return $newUser;
 		} else {
-			throw new \PDOException("Hi there, looks like this is your first time running the Zoho APP. Please run this command */zoho _username password_* so I can generate a token for you.");
+			throw new ExceptionHandler("Hi there, looks like this is your first time running the Zoho APP. Please run this command */zoho _username password_* so I can generate a token for you.");
 		}
 	}
 

@@ -10,7 +10,9 @@ namespace src\actions;
 
 use GuzzleHttp\Client;
 use src\helpers\Dropdown;
+use src\helpers\ExceptionHandler;
 use src\helpers\TimeoutWorkaround;
+use src\models\User;
 use src\services\Repository;
 
 class GenerateLeaveTypeDropdown
@@ -19,20 +21,15 @@ class GenerateLeaveTypeDropdown
 	{
 		try {
 			$getUser = $repo->getUserById($_POST['user_id']);
-		} catch (\PDOException $e) {
+		} catch (ExceptionHandler $e) {
 			die($e->getMessage());
 		}
 
 		//Timeout workaround
 		TimeoutWorkaround::execute($client, $_POST['response_url'], " ");
 
-		$authToken = $getUser->getToken();
-		$userId = $getUser->getEmail();
-
 		//Get all types of leave that are available
-		$url = "https://people.zoho.com/people/api/leave/getLeaveTypeDetails?authtoken={$authToken}&userId={$userId}";
-		$response = $client->request('GET', $url);
-		$results = json_decode($response->getBody()->getContents())->response->result;
+		$results = $this->getAllLeaveTypes($client, $getUser);
 
 		//Generate dropdown list of available leave types
 		$payload = Dropdown::generatePayload($results);
@@ -44,5 +41,17 @@ class GenerateLeaveTypeDropdown
 				'Content-Type' => 'application/json',
 			]
 		]);
+	}
+
+	private function getAllLeaveTypes(Client $client, User $getUser)
+	{
+		$authToken = $getUser->getToken();
+		$userId = $getUser->getEmail();
+
+		$url = "https://people.zoho.com/people/api/leave/getLeaveTypeDetails?authtoken={$authToken}&userId={$userId}";
+		$response = $client->request('GET', $url);
+		$results = json_decode($response->getBody()->getContents())->response->result;
+
+		return $results;
 	}
 }

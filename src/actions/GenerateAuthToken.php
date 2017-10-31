@@ -8,7 +8,9 @@
 
 namespace src\actions;
 
+use GuzzleHttp\Psr7\Response;
 use src\DI\Container;
+use src\helpers\ExceptionHandler;
 use src\helpers\TimeoutWorkaround;
 use src\services\Repository;
 use GuzzleHttp\Client;
@@ -27,17 +29,10 @@ class GenerateAuthToken
 			$password = $usernameAndPasswordArray[1];
 
 			if (empty($password)) {
-				throw new \Exception("*ERROR*: _Invalid action_");
+				throw new ExceptionHandler("*ERROR*: _Invalid action_");
 			}
-		} catch (\Exception $e) {
-			$text = ['text' => $e->getMessage()];
-			$client->request('POST', $_POST['response_url'], [
-				'body' => json_encode($text),
-				'headers' => [
-					'Content-Type' => 'application/json',
-				]
-			]);
-			die();
+		} catch (ExceptionHandler $e) {
+			return $e->execute();
 		}
 		//Check against DB if token has already been generated
 		$repo->checkIfTokenGenerated();
@@ -52,20 +47,19 @@ class GenerateAuthToken
 		]);
 
 		//Extract token from response string
-		$respToken = explode("\n", $response->getBody()->getContents())[2];
-		$authToken = substr($respToken, strpos($respToken, "=") + 1);
+		$authToken = $this->extractTokenFromResponse($response);
 
 		try {
 			if ($authToken === "INVALID_PASSWORD") {
-				throw new \Exception("*ERROR*: _Invalid password - please try again_");
+				throw new ExceptionHandler("*ERROR*: _Invalid password - please try again_");
 			} elseif ($authToken === "NO_SUCH_USER") {
-				throw new \Exception("*ERROR*: _Invalid username - please try again_");
+				throw new ExceptionHandler("*ERROR*: _Invalid username - please try again_");
 			} elseif ($authToken === "INVALID_CREDENTIALS") {
-				throw new \Exception("*ERROR*: _Invalid credentials - please check your email and password try again_");
+				throw new ExceptionHandler("*ERROR*: _Invalid credentials - please check your email and password try again_");
 			}
 
 			$client->request('POST', $_POST['response_url'], [
-				'body' => '{"text": "*Your token has been successfully generated! Thanks for setting up the ZohoApp*"}',
+				'body' => '{"text": "*Your token has been successfully generated! Thanks for setting up the ZohoApp :)*\nPlease continue using this app by simply entering \"_/zoho_\" anywhere in the chat window - it will be only visible to you"}',
 				'headers' => [
 					'Content-Type' => 'application/json',
 				]
@@ -85,23 +79,21 @@ class GenerateAuthToken
 			$employeeZohoInfo['superiorIM'] = Container::getInstance()->getSuperiorsIM($superiorsMail);
 
 			//Store the token and user info in DB
-			$repo->insertToken($_POST['user_id'], $username, $authToken, $employeeZohoInfo);
-		} catch (\PDOException $e) {
-			$text = ['text' => $e->getMessage()];
-			$client->request('POST', $_POST['response_url'], [
-				'body' => json_encode($text),
-				'headers' => [
-					'Content-Type' => 'application/json',
-				]
-			]);
-		} catch (\Exception $e) {
-			$text = ['text' => $e->getMessage()];
-			$client->request('POST', $_POST['response_url'], [
-				'body' => json_encode($text),
-				'headers' => [
-					'Content-Type' => 'application/json',
-				]
-			]);
+			return $repo->insertToken($_POST['user_id'], $username, $authToken, $employeeZohoInfo);
+		} catch (ExceptionHandler $e) {
+			return $e->execute();
 		}
+	}
+
+	/**
+	 * @param $response
+	 * @return string
+	 */
+	private function extractTokenFromResponse(Response $response):string
+	{
+		$respToken = explode("\n", $response->getBody()->getContents())[2];
+		$authToken = substr($respToken, strpos($respToken, "=") + 1);
+
+		return $authToken;
 	}
 }
