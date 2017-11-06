@@ -14,6 +14,8 @@ use src\helpers\TimeoutWorkaround;
 
 class GenerateModalDialog
 {
+	private $generatedDialog;
+
 	public function run(Client $client, \stdClass $params)
 	{
 		$token = $_ENV['TOKEN'];
@@ -23,7 +25,7 @@ class GenerateModalDialog
 
 		$actionTriggerId = $params->trigger_id;
 
-		$dialog = Dialog::generateDialog();
+		$dialog = $this->chooseDialogType($params);
 
 		$client->request('POST', 'https://slack.com/api/dialog.open', [
 			'form_params' => [
@@ -32,5 +34,18 @@ class GenerateModalDialog
 				'dialog' => $dialog,
 			]
 		]);
+	}
+
+	private function chooseDialogType($params)
+	{
+		if ($params->callback_id === "leave_selection"){
+			$this->generatedDialog = Dialog::generateDialog();
+		} elseif ($params->callback_id === "leave_approval"){
+			$requestId = $params->original_message->attachments[0]->footer;
+			$yesNo = $params->actions[0]->value;
+			$isApproved = $yesNo ? 1 : 0;
+			$this->generatedDialog = Dialog::generateReasonDialog($requestId, $isApproved);
+		}
+		return $this->generatedDialog;
 	}
 }

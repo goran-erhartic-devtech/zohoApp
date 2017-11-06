@@ -9,9 +9,12 @@
 namespace src\services;
 
 use GuzzleHttp\Client;
+use src\actions\ApproveLeaveRequest;
 use src\actions\GenerateAuthToken;
 use src\actions\GenerateLeaveTypeDropdown;
 use src\actions\GenerateModalDialog;
+use src\actions\HandleLeaveRequest;
+use src\actions\RejectLeaveRequest;
 use src\actions\RespondToLeaveType;
 use src\actions\SendLeaveRequest;
 use src\helpers\GetSuperiorsIM;
@@ -68,5 +71,12 @@ class SlackActions implements iSlackActions
 		$getSuperiorsIM = new GetSuperiorsIM();
 
 		return $getSuperiorsIM->getSuperiorsIM($this->client, $mail);
+	}
+
+	public function handleLeaveRequest(\stdClass $params)
+	{
+		$handleLeaveRequest = new HandleLeaveRequest();
+
+		return $handleLeaveRequest->run($this->client, $params, $this->repo);
 	}
 }

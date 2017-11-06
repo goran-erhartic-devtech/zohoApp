@@ -27,3 +27,13 @@ if ($params->callback_id === "leave_selection") {
 if ($params->callback_id === "leave_dates") {
 	Container::getInstance()->sendLeaveRequest($params);
 }
+
+//Generate modal after DM chooses Approve/Reject
+if ($params->callback_id === "leave_approval") {
+	Container::getInstance()->generateModalDialog($params);
+}
+
+//DM Approve/Reject
+if ($params->callback_id === "dm_reason") {
+	Container::getInstance()->handleLeaveRequest($params);
+}

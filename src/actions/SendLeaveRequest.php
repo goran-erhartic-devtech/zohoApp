@@ -79,7 +79,7 @@ class SendLeaveRequest
 				}
 			}
 
-			$text = ApproveLeaveMessage::generateMessage($params, $leaveName);
+			$text = ApproveLeaveMessage::generateMessage($params, $leaveName, $result['pkId']);
 
 			//Send PM to DM
 			$client->request('POST', 'https://slack.com/api/chat.postMessage', [
