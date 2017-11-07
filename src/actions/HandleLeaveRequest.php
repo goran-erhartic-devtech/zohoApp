@@ -33,13 +33,12 @@ class HandleLeaveRequest
 
 		$resp = json_decode($request->getBody()->getContents(), true)['response'];
 
-		$respText = '';
 		if ($resp['message'] === "Success" && $isApproved === "1") {
 			$respText = "Request approved :+1:";
 		} elseif ($resp['message'] === "Success" && $isApproved === "0") {
 			$respText = "Request declined :rage:";
 		} else {
-			$resp['errors']['message'];
+			$respText = $resp['errors']['message'];
 		}
 
 		$client->requestAsync('POST', 'https://slack.com/api/chat.postEphemeral', [
