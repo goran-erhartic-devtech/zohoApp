@@ -9,12 +9,16 @@
 namespace src\actions;
 
 use GuzzleHttp\Client;
+use src\helpers\TimeoutWorkaround;
 use src\services\Repository;
 
 class HandleLeaveRequest
 {
 	public function run(Client $client, \stdClass $params, Repository $repo)
 	{
+		//Timeout workaround
+		TimeoutWorkaround::execute();
+
 		$dmId = $params->user->id;
 		$departmentManager = $repo->getUserById($dmId);
 
