@@ -26,7 +26,7 @@ class GenerateLeaveTypeDropdown
 		}
 
 		//Timeout workaround
-		TimeoutWorkaround::execute($client, $_POST['response_url'], " ");
+		TimeoutWorkaround::execute();
 
 		//Get all types of leave that are available
 		$results = $this->getAllLeaveTypes($client, $getUser);

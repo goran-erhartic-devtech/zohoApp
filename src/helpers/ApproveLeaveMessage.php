@@ -10,7 +10,7 @@ namespace src\helpers;
 
 class ApproveLeaveMessage
 {
-	public static function generateMessage($params, $leave)
+	public static function generateMessage($params, $leave, $requestId)
 	{
 		$employee = $params->user->name;
 		$leaveFrom = $params->submission->leave_from;
@@ -24,17 +24,19 @@ class ApproveLeaveMessage
 		$attachment['color'] = "#551A8B";
 		$attachment['attachment_type'] = "default";
 		$attachment['callback_id'] = "leave_approval";
+		$attachment['footer'] = $requestId;
+		$attachment['replace_original'] = true;
 
 		$action1['name'] = "button";
 		$action1['text'] = "Approve";
 		$action1['type'] = "button";
-		$action1['value'] = 'yes';
+		$action1['value'] = true;
 		$action1['style'] = "primary";
 
 		$action2['name'] = "button";
 		$action2['text'] = "Decline";
 		$action2['type'] = "button";
-		$action2['value'] = 'no';
+		$action2['value'] = false;
 		$action2['style'] = "danger";
 
 		$attachment['actions'] = array($action1, $action2);

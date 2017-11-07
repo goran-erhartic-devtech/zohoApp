@@ -20,7 +20,7 @@ class GenerateAuthToken
 	public function run(Client $client, Repository $repo)
 	{
 		//Timeout workaround
-		TimeoutWorkaround::execute($client, $_POST['response_url'], " ");
+		TimeoutWorkaround::execute();
 
 		//Get email and password from users input
 		try {

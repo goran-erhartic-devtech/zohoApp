@@ -38,4 +38,33 @@ class Dialog
 
 		return json_encode($dialog);
 	}
+
+	public static function generateReasonDialog($requestId, $isApproved)
+	{
+		$dialog['callback_id'] = "dm_reason";
+		$dialog['title'] = "Please leave a reply:";
+		$dialog['submit_label'] = "Reply";
+
+		$reply['type'] = "textarea";
+		$reply['placeholder'] = "Have a great time on summer holiday";
+		$reply['hint'] = "Please giva a short response for this leave request";
+		$reply['label'] = "Reply:";
+		$reply['name'] = "leave_reply";
+
+		$reqId['type'] = "text";
+		$reqId['hint'] = "*DO NOT EDIT THIS*";
+		$reqId['label'] = "Request ID:";
+		$reqId['name'] = "reqest_id";
+		$reqId['value'] = $requestId;
+
+		$decision['type'] = "text";
+		$decision['hint'] = "*DO NOT EDIT THIS*";
+		$decision['label'] = "Decision:";
+		$decision['name'] = "is_approved";
+		$decision['value'] = $isApproved;
+
+		$dialog['elements'] = array($reply, $reqId, $decision);
+
+		return json_encode($dialog);
+	}
 }

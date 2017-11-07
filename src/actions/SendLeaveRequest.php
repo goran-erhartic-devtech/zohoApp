@@ -9,6 +9,7 @@
 namespace src\actions;
 
 use src\helpers\ApproveLeaveMessage;
+use src\helpers\TimeoutWorkaround;
 use src\services\Repository;
 use GuzzleHttp\Client;
 use src\models\XMLRequestModel;
@@ -18,7 +19,7 @@ class SendLeaveRequest
 	public function run(Client $client, \stdClass $params, Repository $repo)
 	{
 		//Timeout workaround
-		$this->timeoutWorkaround($client, $params);
+		TimeoutWorkaround::execute();
 
 		$fromDate = $params->submission->leave_from;
 		$toDate = $params->submission->leave_to;
@@ -46,7 +47,7 @@ class SendLeaveRequest
 		$result = json_decode($response->getBody()->getContents(), true);
 
 		$dialogResponseChannel = $params->channel->id;
-		$dialogResponseText = isset($result['pkId']) ? "Leave request has been sent to your DM for approval" : (isset($result['message']['From']) ? $result['message']['From'] : $result[0]['message'][0]['From']);
+		$dialogResponseText = $this->getResponseText($result);
 		$dialogResponseUser = $params->user->id;
 
 		//Response message to Slack user
@@ -79,7 +80,7 @@ class SendLeaveRequest
 				}
 			}
 
-			$text = ApproveLeaveMessage::generateMessage($params, $leaveName);
+			$text = ApproveLeaveMessage::generateMessage($params, $leaveName, $result['pkId']);
 
 			//Send PM to DM
 			$client->request('POST', 'https://slack.com/api/chat.postMessage', [
@@ -98,34 +99,20 @@ class SendLeaveRequest
 		}
 	}
 
-	/**
-	 * @param Client $client
-	 * @param \stdClass $params
-	 */
-	private function timeoutWorkaround(Client $client, \stdClass $params)
+	private function getResponseText($result)
 	{
-		ob_start();
-		$client->requestAsync('POST', 'https://slack.com/api/chat.postEphemeral', [
-			'form_params' => [
-				'token' => $_ENV['TOKEN'],
-				'channel' => $params->channel->id,
-				'text' => " ",
-				'user' => $params->user->id,
-				'as_user' => false
-			],
-			'headers' => [
-				'Content-Type' => 'application/x-www-form-urlencoded',
-			]
-		])->wait();
-		$size = ob_get_length();
-		header("Content-Length: $size");
-		header('Connection: close');
+		if (isset($result['pkId'])) {
+			$dialogResponseText = "Leave request has been sent to your DM for approval";
+		} elseif (isset($result['message']['From'])) {
+			$dialogResponseText = $result['message']['From'];
+		} elseif (isset($result['message']['To'])) {
+			$dialogResponseText = $result['message']['To'];
+		} elseif (isset($result[0]['message'][0]['From'])) {
+			$dialogResponseText = $result[0]['message'][0]['From'];
+		} else {
+			$dialogResponseText = $result[0]['message'][0]['To'];
+		}
 
-		// flush all output
-		ob_end_flush();
-		ob_flush();
-		flush();
-		session_write_close();
-		//End timeout workaround
+		return $dialogResponseText;
 	}
 }
