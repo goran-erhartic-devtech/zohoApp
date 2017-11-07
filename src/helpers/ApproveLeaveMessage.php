@@ -25,6 +25,7 @@ class ApproveLeaveMessage
 		$attachment['attachment_type'] = "default";
 		$attachment['callback_id'] = "leave_approval";
 		$attachment['footer'] = $requestId;
+		$attachment['replace_original'] = true;
 
 		$action1['name'] = "button";
 		$action1['text'] = "Approve";

@@ -37,25 +37,29 @@ class HandleLeaveRequest
 
 		$resp = json_decode($request->getBody()->getContents(), true)['response'];
 
-		if ($resp['message'] === "Success" && $isApproved === "1") {
-			$respText = "Request approved :+1:";
-		} elseif ($resp['message'] === "Success" && $isApproved === "0") {
-			$respText = "Request declined :rage:";
-		} else {
-			$respText = $resp['errors']['message'];
-		}
+//		if ($resp['message'] === "Success" && $isApproved === "1") {
+//			$respText = "Request approved :+1:";
+//		} elseif ($resp['message'] === "Success" && $isApproved === "0") {
+//			$respText = "Request declined :rage:";
+//		} else {
+//			$respText = $resp['errors']['message'];
+//		}
 
-		$client->requestAsync('POST', 'https://slack.com/api/chat.postEphemeral', [
-			'form_params' => [
-				'token' => $_ENV['TOKEN'],
-				'channel' => $params->channel->id,
-				'text' => $respText,
-				'user' => $params->user->id,
-				'as_user' => false
-			],
-			'headers' => [
-				'Content-Type' => 'application/x-www-form-urlencoded',
-			]
-		])->wait();
+		if(isset($resp['errors']['message'])){
+			$respText = $resp['errors']['message'];
+			$client->requestAsync('POST', 'https://slack.com/api/chat.postMessage', [
+				'form_params' => [
+					'token' => $_ENV['TOKEN'],
+					'channel' => $params->channel->id,
+					'text' => $respText,
+					'replace_original' => true,
+					'user' => $params->user->id,
+					'as_user' => false
+				],
+				'headers' => [
+					'Content-Type' => 'application/x-www-form-urlencoded',
+				]
+			])->wait();
+		}
 	}
 }
