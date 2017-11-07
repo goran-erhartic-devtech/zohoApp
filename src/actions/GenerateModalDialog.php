@@ -21,7 +21,7 @@ class GenerateModalDialog
 		$token = $_ENV['TOKEN'];
 
 		//Timeout workaround
-		TimeoutWorkaround::execute($client, $params->response_url, "Please fill out the required fields");
+		$this->timeoutWorkaround($client, $params);
 
 		$actionTriggerId = $params->trigger_id;
 
@@ -47,5 +47,36 @@ class GenerateModalDialog
 			$this->generatedDialog = Dialog::generateReasonDialog($requestId, $isApproved);
 		}
 		return $this->generatedDialog;
+	}
+
+	/**
+	 * @param Client $client
+	 * @param \stdClass $params
+	 */
+	private function timeoutWorkaround(Client $client, \stdClass $params)
+	{
+		ob_start();
+		$client->requestAsync('POST', 'https://slack.com/api/chat.postEphemeral', [
+			'form_params' => [
+				'token' => $_ENV['TOKEN'],
+				'channel' => $params->channel->id,
+				'text' => "Please fill out the fields",
+				'user' => $params->user->id,
+				'as_user' => false
+			],
+			'headers' => [
+				'Content-Type' => 'application/x-www-form-urlencoded',
+			]
+		])->wait();
+		$size = ob_get_length();
+		header("Content-Length: $size");
+		header('Connection: close');
+
+		// flush all output
+		ob_end_flush();
+		ob_flush();
+		flush();
+		session_write_close();
+		//End timeout workaround
 	}
 }
