@@ -15,6 +15,30 @@ class HandleLeaveRequest
 {
 	public function run(Client $client, \stdClass $params, Repository $repo)
 	{
+		$respText = $this->dmResponseForLeaveRequest($client, $params, $repo);
+
+		$client->request('POST', 'https://slack.com/api/chat.postEphemeral', [
+			'form_params' => [
+				'token' => $_ENV['TOKEN'],
+				'channel' => $params->channel->id,
+				'text' => $respText,
+				'user' => $params->user->id,
+				'as_user' => false
+			],
+			'headers' => [
+				'Content-Type' => 'application/x-www-form-urlencoded',
+			]
+		]);
+	}
+
+	/**
+	 * @param Client $client
+	 * @param \stdClass $params
+	 * @param Repository $repo
+	 * @return string
+	 */
+	private function dmResponseForLeaveRequest(Client $client, \stdClass $params, Repository $repo):string
+	{
 		$dmId = $params->user->id;
 		$departmentManager = $repo->getUserById($dmId);
 
@@ -40,18 +64,6 @@ class HandleLeaveRequest
 		} else {
 			$respText = $resp['errors']['message'];
 		}
-
-		$client->request('POST', 'https://slack.com/api/chat.postEphemeral', [
-			'form_params' => [
-				'token' => $_ENV['TOKEN'],
-				'channel' => $params->channel->id,
-				'text' => $respText,
-				'user' => $params->user->id,
-				'as_user' => false
-			],
-			'headers' => [
-				'Content-Type' => 'application/x-www-form-urlencoded',
-			]
-		]);
+		return $respText;
 	}
 }

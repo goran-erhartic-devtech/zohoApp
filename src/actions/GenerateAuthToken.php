@@ -54,25 +54,11 @@ class GenerateAuthToken
 				throw new ExceptionHandler("*ERROR*: _Invalid credentials - please check your email and password try again_");
 			}
 
-			$client->request('POST', $_POST['response_url'], [
-				'body' => '{"text": "*Your token has been successfully generated! Thanks for setting up the ZohoApp :)*\nPlease continue using this app by simply entering \"_/zoho_\" anywhere in the chat window - it will be only visible to you"}',
-				'headers' => [
-					'Content-Type' => 'application/json',
-				]
-			]);
+			$this->successRegistrationMessage($client);
 
 			//Get Zoho info for this Slack user
 			$url = "https://people.zoho.com/people/api/forms/P_EmployeeView/records?authtoken={$authToken}&searchColumn=EMPLOYEEMAILALIAS&searchValue={$username}";
-			$response = $client->request('GET', $url);
-			$employeeZohoInfo = json_decode($response->getBody()->getContents(), true)[0];
-
-			$employeeReportingToArray = explode(' ', $employeeZohoInfo['Reporting To']);
-//			$superiorsMail = strtolower($employeeReportingToArray[0] . '.' . $employeeReportingToArray[1] . '@devtechhroup.com');
-
-			//TODO delete this - ONLY for testing - use above
-			$superiorsMail = strtolower($employeeReportingToArray[0] . '.ns@gmail.com');
-
-			$employeeZohoInfo['superiorIM'] = Container::getInstance()->getSuperiorsIM($superiorsMail);
+			$employeeZohoInfo = $this->getEmployeeZohoInfoArray($client, $url);
 
 			//Store the token and user info in DB
 			return $repo->insertToken($_POST['user_id'], $username, $authToken, $employeeZohoInfo);
@@ -91,5 +77,39 @@ class GenerateAuthToken
 		$authToken = substr($respToken, strpos($respToken, "=") + 1);
 
 		return $authToken;
+	}
+
+	/**
+	 * @param Client $client
+	 */
+	private function successRegistrationMessage(Client $client)
+	{
+		$client->request('POST', $_POST['response_url'], [
+			'body' => '{"text": "*Your token has been successfully generated! Thanks for setting up the ZohoApp :)*\nPlease continue using this app by simply entering \"_/zoho_\" anywhere in the chat window - it will be only visible to you"}',
+			'headers' => [
+				'Content-Type' => 'application/json',
+			]
+		]);
+	}
+
+	/**
+	 * @param Client $client
+	 * @param $url
+	 * @return array
+	 */
+	private function getEmployeeZohoInfoArray(Client $client, $url):array
+	{
+		$response = $client->request('GET', $url);
+		$employeeZohoInfo = json_decode($response->getBody()->getContents(), true)[0];
+
+		$employeeReportingToArray = explode(' ', $employeeZohoInfo['Reporting To']);
+//			$superiorsMail = strtolower($employeeReportingToArray[0] . '.' . $employeeReportingToArray[1] . '@devtechhroup.com');
+
+		//TODO delete this - ONLY for testing - use above
+		$superiorsMail = strtolower($employeeReportingToArray[0] . '.ns@gmail.com');
+
+		$employeeZohoInfo['superiorIM'] = Container::getInstance()->getSuperiorsIM($superiorsMail);
+
+		return $employeeZohoInfo;
 	}
 }

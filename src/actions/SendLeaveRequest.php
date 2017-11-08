@@ -9,6 +9,7 @@
 namespace src\actions;
 
 use src\helpers\ApproveLeaveMessage;
+use src\models\User;
 use src\services\Repository;
 use GuzzleHttp\Client;
 use src\models\XMLRequestModel;
@@ -62,19 +63,7 @@ class SendLeaveRequest
 
 		//Request to DM
 		if (isset($result['pkId'])) {
-			//Get all types of leave that are available
-			$url = "https://people.zoho.com/people/api/leave/getLeaveTypeDetails?authtoken={$employee->getToken()}&userId={$employee->getZohoUserId()}";
-			$response = $client->request('GET', $url);
-			$allLeaves = json_decode($response->getBody()->getContents())->response->result;
-
-			//Get name of applied leave
-			$leaveName = '';
-			foreach ($allLeaves as $leave) {
-				if ($leave->Id === $employee->getLeaveType()) {
-					$leaveName = $leave->Name;
-					break;
-				}
-			}
+			$leaveName = $this->getLeaveName($client, $employee);
 
 			$text = ApproveLeaveMessage::generateMessage($params, $leaveName, $result['pkId']);
 
@@ -95,7 +84,11 @@ class SendLeaveRequest
 		}
 	}
 
-	private function getResponseText($result)
+	/**
+	 * @param $result
+	 * @return string
+	 */
+	private function getResponseText($result):string
 	{
 		if (isset($result['pkId'])) {
 			$dialogResponseText = "Leave request has been sent to your DM for approval";
@@ -110,5 +103,25 @@ class SendLeaveRequest
 		}
 
 		return $dialogResponseText;
+	}
+
+	/**
+	 * @param Client $client
+	 * @param $employee
+	 * @return string
+	 */
+	private function getLeaveName(Client $client, User $employee):string
+	{
+		//Get all types of leave that are available
+		$url = "https://people.zoho.com/people/api/leave/getLeaveTypeDetails?authtoken={$employee->getToken()}&userId={$employee->getZohoUserId()}";
+		$response = $client->request('GET', $url);
+		$allLeaves = json_decode($response->getBody()->getContents())->response->result;
+
+		//Get name of applied leave
+		foreach ($allLeaves as $leave) {
+			if ($leave->Id === $employee->getLeaveType()) {
+				return $leave->Name;
+			}
+		}
 	}
 }

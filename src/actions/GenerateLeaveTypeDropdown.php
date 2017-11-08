@@ -22,7 +22,7 @@ class GenerateLeaveTypeDropdown
 		try {
 			$getUser = $repo->getUserById($_POST['user_id']);
 		} catch (ExceptionHandler $e) {
-			die($e->getMessage());
+			return $e->execute();
 		}
 
 		//Get all types of leave that are available
@@ -40,7 +40,12 @@ class GenerateLeaveTypeDropdown
 		]);
 	}
 
-	private function getAllLeaveTypes(Client $client, User $getUser)
+	/**
+	 * @param Client $client
+	 * @param User $getUser
+	 * @return array
+	 */
+	private function getAllLeaveTypes(Client $client, User $getUser):array
 	{
 		$authToken = $getUser->getToken();
 		$userId = $getUser->getEmail();

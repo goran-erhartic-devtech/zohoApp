@@ -34,8 +34,10 @@ class GenerateModalDialog
 
 	private function chooseDialogType($params, $client)
 	{
+		//Generate modal for user with From, To dates and a Message
 		if ($params->callback_id === "leave_selection") {
 			$this->generatedDialog = Dialog::generateDialog();
+			//Generate modal for DM's reply message
 		} elseif ($params->callback_id === "leave_approval") {
 			$requestId = $params->original_message->attachments[0]->footer;
 			$yesNo = $params->actions[0]->value;
