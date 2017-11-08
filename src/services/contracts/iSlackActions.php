@@ -44,4 +44,10 @@ interface iSlackActions
 	 */
 	public function getSuperiorsIM(string $mail);
 
+	/**
+	 * @param \stdClass $params
+	 * @return mixed
+	 */
+	public function handleLeaveRequest(\stdClass $params);
+
 }

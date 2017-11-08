@@ -9,12 +9,10 @@
 namespace src\services;
 
 use GuzzleHttp\Client;
-use src\actions\ApproveLeaveRequest;
 use src\actions\GenerateAuthToken;
 use src\actions\GenerateLeaveTypeDropdown;
 use src\actions\GenerateModalDialog;
 use src\actions\HandleLeaveRequest;
-use src\actions\RejectLeaveRequest;
 use src\actions\RespondToLeaveType;
 use src\actions\SendLeaveRequest;
 use src\helpers\GetSuperiorsIM;
