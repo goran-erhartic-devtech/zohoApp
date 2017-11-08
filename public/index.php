@@ -10,6 +10,9 @@
 require_once __DIR__ . '/../vendor/autoload.php';
 
 use src\DI\Container;
+use src\helpers\TimeoutWorkaround;
+
+TimeoutWorkaround::execute();
 
 if (isset($_POST['text']) && $_POST['text'] != '') {
 	Container::getInstance()->generateAuthToken();

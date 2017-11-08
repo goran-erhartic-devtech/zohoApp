@@ -11,7 +11,6 @@ namespace src\actions;
 use GuzzleHttp\Psr7\Response;
 use src\DI\Container;
 use src\helpers\ExceptionHandler;
-use src\helpers\TimeoutWorkaround;
 use src\services\Repository;
 use GuzzleHttp\Client;
 
@@ -19,9 +18,6 @@ class GenerateAuthToken
 {
 	public function run(Client $client, Repository $repo)
 	{
-		//Timeout workaround
-		TimeoutWorkaround::execute();
-
 		//Get email and password from users input
 		try {
 			$usernameAndPasswordArray = explode(" ", $_POST['text']);

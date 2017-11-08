@@ -9,16 +9,12 @@
 namespace src\actions;
 
 use GuzzleHttp\Client;
-use src\helpers\TimeoutWorkaround;
 use src\services\Repository;
 
 class HandleLeaveRequest
 {
 	public function run(Client $client, \stdClass $params, Repository $repo)
 	{
-		//Timeout workaround
-		TimeoutWorkaround::execute();
-
 		$dmId = $params->user->id;
 		$departmentManager = $repo->getUserById($dmId);
 
@@ -37,29 +33,25 @@ class HandleLeaveRequest
 
 		$resp = json_decode($request->getBody()->getContents(), true)['response'];
 
-//		if ($resp['message'] === "Success" && $isApproved === "1") {
-//			$respText = "Request approved :+1:";
-//		} elseif ($resp['message'] === "Success" && $isApproved === "0") {
-//			$respText = "Request declined :rage:";
-//		} else {
-//			$respText = $resp['errors']['message'];
-//		}
-
-		if(isset($resp['errors']['message'])){
+		if ($resp['message'] === "Success" && $isApproved === "1") {
+			$respText = "Request successfully approved";
+		} elseif ($resp['message'] === "Success" && $isApproved === "0") {
+			$respText = "Request successfully declined";
+		} else {
 			$respText = $resp['errors']['message'];
-			$client->requestAsync('POST', 'https://slack.com/api/chat.postMessage', [
-				'form_params' => [
-					'token' => $_ENV['TOKEN'],
-					'channel' => $params->channel->id,
-					'text' => $respText,
-					'replace_original' => true,
-					'user' => $params->user->id,
-					'as_user' => false
-				],
-				'headers' => [
-					'Content-Type' => 'application/x-www-form-urlencoded',
-				]
-			])->wait();
 		}
+
+		$client->request('POST', 'https://slack.com/api/chat.postEphemeral', [
+			'form_params' => [
+				'token' => $_ENV['TOKEN'],
+				'channel' => $params->channel->id,
+				'text' => $respText,
+				'user' => $params->user->id,
+				'as_user' => false
+			],
+			'headers' => [
+				'Content-Type' => 'application/x-www-form-urlencoded',
+			]
+		]);
 	}
 }

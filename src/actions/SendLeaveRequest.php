@@ -9,7 +9,6 @@
 namespace src\actions;
 
 use src\helpers\ApproveLeaveMessage;
-use src\helpers\TimeoutWorkaround;
 use src\services\Repository;
 use GuzzleHttp\Client;
 use src\models\XMLRequestModel;
@@ -18,9 +17,6 @@ class SendLeaveRequest
 {
 	public function run(Client $client, \stdClass $params, Repository $repo)
 	{
-		//Timeout workaround
-		TimeoutWorkaround::execute();
-
 		$fromDate = $params->submission->leave_from;
 		$toDate = $params->submission->leave_to;
 		$leaveReason = $params->submission->leave_reason;

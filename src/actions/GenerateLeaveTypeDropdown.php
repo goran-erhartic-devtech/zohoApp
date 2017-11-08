@@ -25,9 +25,6 @@ class GenerateLeaveTypeDropdown
 			die($e->getMessage());
 		}
 
-		//Timeout workaround
-		TimeoutWorkaround::execute();
-
 		//Get all types of leave that are available
 		$results = $this->getAllLeaveTypes($client, $getUser);
 

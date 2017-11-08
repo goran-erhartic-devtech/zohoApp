@@ -10,6 +10,9 @@
 require_once __DIR__ . '/../vendor/autoload.php';
 
 use src\DI\Container;
+use src\helpers\TimeoutWorkaround;
+
+TimeoutWorkaround::execute();
 
 $params = json_decode($_POST['payload']);
 

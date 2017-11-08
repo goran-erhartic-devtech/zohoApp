@@ -10,7 +10,6 @@ namespace src\actions;
 
 use GuzzleHttp\Client;
 use src\helpers\Dialog;
-use src\helpers\TimeoutWorkaround;
 
 class GenerateModalDialog
 {
@@ -19,9 +18,6 @@ class GenerateModalDialog
 	public function run(Client $client, \stdClass $params)
 	{
 		$token = $_ENV['TOKEN'];
-
-		//Timeout workaround
-		TimeoutWorkaround::execute();
 
 		$actionTriggerId = $params->trigger_id;
 
@@ -53,10 +49,10 @@ class GenerateModalDialog
 
 	private function editButtonMessage(Client $client, $params, $isApproved)
 	{
-		$message = $isApproved ? "Request approved :+1:" : "Request declined :rage:";
+		$message = $isApproved ? ":white_check_mark: request approved " : ":x: request declined";
 		$payload = $params->original_message;
 		$payload->attachments[0]->actions = null;
-		$payload->attachments[0]->text .= "\nSTATUS: {$message}";
+		$payload->attachments[0]->text .= "\n{$message}";
 		$body = json_encode($payload);
 		$client->request('POST', $params->response_url, [
 			'body' => $body,
