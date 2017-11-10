@@ -18,8 +18,8 @@ class SendLeaveRequest
 {
 	public function run(Client $client, \stdClass $params, Repository $repo)
 	{
-		$fromDate = $params->submission->leave_from;
-		$toDate = $params->submission->leave_to;
+		$fromDate = str_replace('/', '-', $params->submission->leave_from);
+		$toDate = str_replace('/', '-', $params->submission->leave_to);
 		$leaveReason = $params->submission->leave_reason;
 
 		$userId = $params->user->id;
