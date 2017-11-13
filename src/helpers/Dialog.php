@@ -33,6 +33,7 @@ class Dialog
 		$durationSelect['placeholder'] = "Please choose";
 		$durationSelect['value'] = "1";
 		$durationSelect['name'] = "is_half_day";
+		$durationSelect['hint'] = "* NOTE: only date in 'From' field will be added as half-day";
 
 		$durationSelect1['label'] = "Yes";
 		$durationSelect1['value'] = "0.5";
