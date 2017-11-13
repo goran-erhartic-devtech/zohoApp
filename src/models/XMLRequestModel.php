@@ -15,6 +15,7 @@ class XMLRequestModel
 	private $to;
 	private $leaveType;
 	private $reasonForLeave;
+	private $isHalfDay;
 
 	/**
 	 * @return mixed
@@ -111,9 +112,30 @@ class XMLRequestModel
 		return $this;
 	}
 
+	/**
+	 * @return mixed
+	 */
+	public function getIsHalfDay()
+	{
+		return $this->isHalfDay;
+	}
+
+	/**
+	 * @param mixed $isHalfDay
+	 * @return XMLRequestModel
+	 */
+	public function setIsHalfDay($isHalfDay)
+	{
+		$this->isHalfDay = $isHalfDay;
+
+		return $this;
+	}
+
+
+
 	public function createXMLData()
 	{
-		$xmlString = "<Request><Record><field name='Employee_ID'>{$this->getEmployeeId()}</field><field name='From'>{$this->getFrom()}</field><field name='To'>{$this->getTo()}</field><field name='Leavetype'>{$this->getLeaveType()}</field><field name='Reasonforleave'>{$this->getReasonForLeave()}</field></Record></Request>";
+		$xmlString = "<Request><Record><field name='Employee_ID'>{$this->getEmployeeId()}</field><field name='From'>{$this->getFrom()}</field><field name='To'>{$this->getTo()}</field><field name='Leavetype'>{$this->getLeaveType()}</field><field name='Reasonforleave'>{$this->getReasonForLeave()}</field><days><date name='{$this->getFrom()}'>{$this->getIsHalfDay()}</date></days></Record></Request>";
 
 		return $xmlString;
 	}

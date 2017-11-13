@@ -28,15 +28,30 @@ class Dialog
 		$dateTo['label'] = "To:";
 		$dateTo['name'] = "leave_to";
 
+		$durationSelect['type'] = "select";
+		$durationSelect['label'] = "Apply for half a day?";
+		$durationSelect['placeholder'] = "Please choose";
+		$durationSelect['value'] = "1";
+		$durationSelect['name'] = "is_half_day";
+
+		$durationSelect1['label'] = "Yes";
+		$durationSelect1['value'] = "0.5";
+		$durationSelect2['label'] = "No";
+		$durationSelect2['value'] = "1";
+
+		$durationSelect['options'] = array($durationSelect1, $durationSelect2);
+
 		$reasonForLeave['type'] = "textarea";
 		$reasonForLeave['placeholder'] = "Summer holiday";
 		$reasonForLeave['hint'] = "Please giva a short summary of reason for leave request";
 		$reasonForLeave['label'] = "Reason for leave:";
 		$reasonForLeave['name'] = "leave_reason";
 
-		$dialog['elements'] = array($dateFrom, $dateTo, $reasonForLeave);
+		$dialog['elements'] = array($dateFrom, $dateTo, $durationSelect, $reasonForLeave);
 
-		return json_encode($dialog);
+		$a = json_encode($dialog);
+
+		return $a;
 	}
 
 	public static function generateReasonDialog($requestId, $isApproved)
