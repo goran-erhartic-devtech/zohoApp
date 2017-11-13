@@ -18,8 +18,9 @@ class SendLeaveRequest
 {
 	public function run(Client $client, \stdClass $params, Repository $repo)
 	{
-		$fromDate = str_replace('/', '-', $params->submission->leave_from);
-		$toDate = str_replace('/', '-', $params->submission->leave_to);
+		$fromDate = $this->formatDate($params->submission->leave_from);
+		$toDate = $this->formatDate($params->submission->leave_to);
+		$isHalfDay = $params->submission->is_half_day;
 		$leaveReason = $params->submission->leave_reason;
 
 		$userId = $params->user->id;
@@ -30,7 +31,8 @@ class SendLeaveRequest
 			->setFrom($fromDate)
 			->setTo($toDate)
 			->setLeaveType($employee->getLeaveType())
-			->setReasonForLeave($leaveReason);
+			->setReasonForLeave($leaveReason)
+			->setIsHalfDay($isHalfDay);
 
 		$xmlPayload = $XML->createXMLData();
 
@@ -123,5 +125,17 @@ class SendLeaveRequest
 				return $leave->Name;
 			}
 		}
+	}
+
+	private function formatDate(string $date):string
+	{
+		$fixDate = str_replace('/', '-', $date);
+		$explodedDate = explode('-', $fixDate);
+
+		$day = strlen($explodedDate[0]) === 2 ? $explodedDate[0] : 0 . $explodedDate[0];
+		$month = strlen($explodedDate[1]) === 2 ? $explodedDate[1] : 0 . $explodedDate[1];
+		$year = $explodedDate[2];
+
+		return $day . '-' . $month . '-' . $year;
 	}
 }
