@@ -53,7 +53,9 @@ class SlackActions implements iSlackActions
 
 	public function generateModalDialog($params)
 	{
-		RespondToLeaveType::insertLeaveType($params, $this->repo);
+		if (!empty($params->actions[0]->selected_options[0]->value)) {
+			RespondToLeaveType::insertLeaveType($params, $this->repo);
+		}
 		$generateModalDialog = new GenerateModalDialog();
 
 		return $generateModalDialog->run($this->client, $params);

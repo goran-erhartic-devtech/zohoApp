@@ -9,7 +9,6 @@
 namespace src\services;
 
 use src\exceptions\RegistrationFailedException;
-use src\helpers\ExceptionHandler;
 use src\models\User;
 use src\DI\Database;
 use src\services\contracts\iRepository;
