@@ -13,7 +13,7 @@ use src\actions\GenerateAuthToken;
 use src\actions\GenerateLeaveTypeDropdown;
 use src\actions\GenerateModalDialog;
 use src\actions\HandleLeaveRequest;
-use src\actions\RespondToLeaveType;
+use src\helpers\RespondToLeaveType;
 use src\actions\SendLeaveRequest;
 use src\actions\UnknownAction;
 use src\actions\WelcomeMessage;

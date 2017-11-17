@@ -6,7 +6,7 @@
  * Time: 1:12 PM
  */
 
-namespace src\actions;
+namespace src\helpers;
 
 use src\services\Repository;
 
