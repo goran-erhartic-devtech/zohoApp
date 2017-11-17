@@ -25,29 +25,29 @@ interface iSlackActions
 	 */
 	public function generateLeaveTypeDropdown();
 
-	/**
-	 * @param $params
-	 * @return mixed
-	 */
-	public function respondToLeaveType(\stdClass $params);
+//	/**
+//	 * @param $params
+//	 * @return mixed
+//	 */
+//	public function respondToLeaveType($params);
 
 	/**
 	 * @param $params
 	 * @return mixed
 	 */
-	public function generateModalDialog(\stdClass $params);
+	public function generateModalDialog($params);
 
 	/**
 	 * @param $params
 	 * @return mixed
 	 */
-	public function sendLeaveRequest(\stdClass $params);
+	public function sendLeaveRequest($params);
 
 	/**
-	 * @param \stdClass $params
+	 * @param $params
 	 * @return mixed
 	 */
-	public function handleLeaveRequest(\stdClass $params);
+	public function handleLeaveRequest($params);
 
 	/**
 	 * @return mixed

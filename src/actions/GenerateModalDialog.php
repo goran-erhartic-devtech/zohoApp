@@ -9,13 +9,14 @@
 namespace src\actions;
 
 use GuzzleHttp\Client;
+use GuzzleHttp\Psr7\Response;
 use src\helpers\Dialog;
 
 class GenerateModalDialog
 {
 	private $generatedDialog;
 
-	public function run(Client $client, \stdClass $params)
+	public function run(Client $client, $params)
 	{
 		$token = $_ENV['TOKEN'];
 
@@ -32,7 +33,13 @@ class GenerateModalDialog
 		]);
 	}
 
-	private function chooseDialogType($params, $client)
+	/**
+	 * Dynamically choose which modal should be created
+	 * @param $params
+	 * @param $client
+	 * @return string
+	 */
+	private function chooseDialogType($params, $client):string
 	{
 		//Generate modal for user with From, To dates and a Message
 		if ($params->callback_id === "leave_selection") {
@@ -49,14 +56,21 @@ class GenerateModalDialog
 		return $this->generatedDialog;
 	}
 
-	private function editButtonMessage(Client $client, $params, $isApproved)
+	/**
+	 * Edit DM's approve/decline message after clicking on button
+	 * @param Client $client
+	 * @param $params
+	 * @param $isApproved
+	 * @return Response
+	 */
+	private function editButtonMessage(Client $client, $params, $isApproved):Response
 	{
 		$message = $isApproved ? ":white_check_mark: request approved " : ":x: request declined";
 		$payload = $params->original_message;
 		$payload->attachments[0]->actions = null;
 		$payload->attachments[0]->text .= "\n{$message}";
 		$body = json_encode($payload);
-		$client->request('POST', $params->response_url, [
+		return $client->request('POST', $params->response_url, [
 			'body' => $body,
 			'headers' => [
 				'Content-Type' => 'application/json',
