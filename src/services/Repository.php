@@ -66,7 +66,7 @@ class Repository implements iRepository
 
 			return $newUser;
 		} else {
-			throw new RegistrationFailedException("Hi there, looks like this is your first time running the Zoho APP. Please run this command */zoho register _username password_* so I can generate a token for you.");
+			throw new RegistrationFailedException("*INFO:* Hi there, looks like this is your first time running the Zoho APP. Please run this command */zoho register _username password_* so I can generate a token for you.");
 		}
 	}
 
