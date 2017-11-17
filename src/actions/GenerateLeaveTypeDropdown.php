@@ -9,20 +9,21 @@
 namespace src\actions;
 
 use GuzzleHttp\Client;
+use GuzzleHttp\Psr7\Response;
+use src\exceptions\RegistrationFailedException;
+use src\exceptions\SlackActionException;
 use src\helpers\Dropdown;
-use src\helpers\ExceptionHandler;
-use src\helpers\TimeoutWorkaround;
 use src\models\User;
 use src\services\Repository;
 
 class GenerateLeaveTypeDropdown
 {
-	public function run(Client $client, Repository $repo)
+	public function run(Client $client, Repository $repo):Response
 	{
 		try {
 			$getUser = $repo->getUserById($_POST['user_id']);
-		} catch (ExceptionHandler $e) {
-			return $e->execute();
+		} catch (RegistrationFailedException $e) {
+			return SlackActionException::forMissingUser($e->getMessage());
 		}
 
 		//Get all types of leave that are available
@@ -32,7 +33,7 @@ class GenerateLeaveTypeDropdown
 		$payload = Dropdown::generatePayload($results);
 
 		//Send the payload privetly to user
-		$client->request('POST', $_POST['response_url'], [
+		return $client->request('POST', $_POST['response_url'], [
 			'body' => $payload,
 			'headers' => [
 				'Content-Type' => 'application/json',

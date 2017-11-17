@@ -13,9 +13,10 @@ use src\actions\GenerateAuthToken;
 use src\actions\GenerateLeaveTypeDropdown;
 use src\actions\GenerateModalDialog;
 use src\actions\HandleLeaveRequest;
-use src\actions\RespondToLeaveType;
+use src\helpers\RespondToLeaveType;
 use src\actions\SendLeaveRequest;
-use src\helpers\GetSuperiorsIM;
+use src\actions\UnknownAction;
+use src\actions\WelcomeMessage;
 use src\services\contracts\iSlackActions;
 
 class SlackActions implements iSlackActions
@@ -27,6 +28,13 @@ class SlackActions implements iSlackActions
 	{
 		$this->client = new Client();
 		$this->repo = new Repository();
+	}
+
+	public function welcomeMessage()
+	{
+		$welcomeMessage = new WelcomeMessage();
+
+		return $welcomeMessage->run($this->client);
 	}
 
 	public function generateAuthToken()
@@ -43,38 +51,34 @@ class SlackActions implements iSlackActions
 		return $generateLeaveTypeDropdown->run($this->client, $this->repo);
 	}
 
-	public function respondToLeaveType(\stdClass $params)
+	public function generateModalDialog($params)
 	{
-		$respondToLeaveType = new RespondToLeaveType();
-
-		return $respondToLeaveType->run($params, $this->repo);
-	}
-
-	public function generateModalDialog(\stdClass $params)
-	{
+		if (!empty($params->actions[0]->selected_options[0]->value)) {
+			RespondToLeaveType::insertLeaveType($params, $this->repo);
+		}
 		$generateModalDialog = new GenerateModalDialog();
 
 		return $generateModalDialog->run($this->client, $params);
 	}
 
-	public function sendLeaveRequest(\stdClass $params)
+	public function sendLeaveRequest($params)
 	{
 		$sendLeaveRequest = new SendLeaveRequest();
 
 		return $sendLeaveRequest->run($this->client, $params, $this->repo);
 	}
 
-	public function getSuperiorsIM(string $mail)
-	{
-		$getSuperiorsIM = new GetSuperiorsIM();
-
-		return $getSuperiorsIM->getSuperiorsIM($this->client, $mail);
-	}
-
-	public function handleLeaveRequest(\stdClass $params)
+	public function handleLeaveRequest($params)
 	{
 		$handleLeaveRequest = new HandleLeaveRequest();
 
 		return $handleLeaveRequest->run($this->client, $params, $this->repo);
+	}
+
+	public function unknownAction()
+	{
+		$unknownAction = new UnknownAction();
+
+		return $unknownAction->run($this->client);
 	}
 }

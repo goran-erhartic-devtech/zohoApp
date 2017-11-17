@@ -8,6 +8,8 @@
 
 namespace src\models;
 
+use Sabre\Xml\Service;
+
 class XMLRequestModel
 {
 	private $employeeId;
@@ -16,6 +18,11 @@ class XMLRequestModel
 	private $leaveType;
 	private $reasonForLeave;
 	private $isHalfDay;
+
+	public function __construct()
+	{
+		$this->service = new Service();
+	}
 
 	/**
 	 * @return mixed
@@ -131,63 +138,66 @@ class XMLRequestModel
 		return $this;
 	}
 
-
-
 	public function createXMLData()
 	{
-		$xmlString = "<Request><Record><field name='Employee_ID'>{$this->getEmployeeId()}</field><field name='From'>{$this->getFrom()}</field><field name='To'>{$this->getTo()}</field><field name='Leavetype'>{$this->getLeaveType()}</field><field name='Reasonforleave'>{$this->getReasonForLeave()}</field><days><date name='{$this->getFrom()}'>{$this->getIsHalfDay()}</date></days></Record></Request>";
+		$xmlData = $this->service->write('Request', [
+			'Record' =>
+				[
+					[
+						'name' => 'field',
+						'attributes' => [
+							'name' =>
+								'Employee_ID',
+						],
+						'value' => $this->employeeId,
+					],
+					[
+						'name' => 'field',
+						'attributes' => [
+							'name' =>
+								'From',
+						],
+						'value' => $this->from,
+					],
+					[
+						'name' => 'field',
+						'attributes' => [
+							'name' =>
+								'To',
+						],
+						'value' => $this->to,
+					],
+					[
+						'name' => 'field',
+						'attributes' => [
+							'name' =>
+								'Leavetype',
+						],
+						'value' => $this->leaveType,
+					],
+					[
+						'name' => 'field',
+						'attributes' => [
+							'name' =>
+								'Reasonforleave',
+						],
+						'value' => $this->reasonForLeave,
+					],
+					[
+						'days' => [
+							[
+								'name' => 'date',
+								'attributes' => [
+									'name' =>
+										$this->getFrom(),
+								],
+								'value' => $this->getIsHalfDay(),
+							]
+						]
+					],
+				]
+		]);
 
-		return $xmlString;
+		return preg_replace('/(\>)\s*(\<)/m', '$1$2', $xmlData);
 	}
-
-//	public function xmlSerialize(Service $service)
-//	{
-//		$result = $service->write('Request', [
-//			'Record' =>
-//				[
-//					[
-//						'name' => 'field',
-//						'attributes' => [
-//							'name' =>
-//								'Employee_ID',
-//						],
-//						'value' => $this->employeeId,
-//					],
-//					[
-//						'name' => 'field',
-//						'attributes' => [
-//							'name' =>
-//								'From',
-//						],
-//						'value' => $this->from,
-//					],
-//					[
-//						'name' => 'field',
-//						'attributes' => [
-//							'name' =>
-//								'To',
-//						],
-//						'value' => $this->to,
-//					],
-//					[
-//						'name' => 'field',
-//						'attributes' => [
-//							'name' =>
-//								'Leavetype',
-//						],
-//						'value' => $this->leaveType,
-//					],
-//					[
-//						'name' => 'field',
-//						'attributes' => [
-//							'name' =>
-//								'Reasonforleave',
-//						],
-//						'value' => $this->reasonForLeave,
-//					],
-//				]
-//		]);
-//
-//		return trim(preg_replace('/\s+/', '', $result));
-//	}
 }

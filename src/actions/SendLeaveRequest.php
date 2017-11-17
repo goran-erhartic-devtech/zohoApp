@@ -16,7 +16,7 @@ use src\models\XMLRequestModel;
 
 class SendLeaveRequest
 {
-	public function run(Client $client, \stdClass $params, Repository $repo)
+	public function run(Client $client, $params, Repository $repo)
 	{
 		$fromDate = $this->formatDate($params->submission->leave_from);
 		$toDate = $this->formatDate($params->submission->leave_to);
@@ -34,6 +34,7 @@ class SendLeaveRequest
 			->setReasonForLeave($leaveReason)
 			->setIsHalfDay($isHalfDay);
 
+		//Generate XML data as string to be sent to Zoho leave request API as a form parameter
 		$xmlPayload = $XML->createXMLData();
 
 		//Send leave request
@@ -87,6 +88,7 @@ class SendLeaveRequest
 	}
 
 	/**
+	 * Response text to be shown privetly to user after leave request has been submitted
 	 * @param $result
 	 * @return string
 	 */
@@ -108,6 +110,7 @@ class SendLeaveRequest
 	}
 
 	/**
+	 * Get name of the selected Leave to send to DM
 	 * @param Client $client
 	 * @param $employee
 	 * @return string
@@ -120,17 +123,27 @@ class SendLeaveRequest
 		$allLeaves = json_decode($response->getBody()->getContents())->response->result;
 
 		//Get name of applied leave
+		$leaveName = '';
 		foreach ($allLeaves as $leave) {
 			if ($leave->Id === $employee->getLeaveType()) {
-				return $leave->Name;
+				$leaveName = $leave->Name;
+				break;
 			}
 		}
+		return $leaveName;
 	}
 
+
+	/**
+	 * Format the date so it goes from (example) 5/8/2018 to 05-08-2018
+	 * @param string $date
+	 * @return string
+	 */
 	private function formatDate(string $date):string
 	{
 		$fixDate = str_replace('/', '-', $date);
 		$explodedDate = explode('-', $fixDate);
+
 
 		$day = strlen($explodedDate[0]) === 2 ? $explodedDate[0] : 0 . $explodedDate[0];
 		$month = strlen($explodedDate[1]) === 2 ? $explodedDate[1] : 0 . $explodedDate[1];

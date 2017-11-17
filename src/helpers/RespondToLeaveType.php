@@ -6,19 +6,17 @@
  * Time: 1:12 PM
  */
 
-namespace src\actions;
+namespace src\helpers;
 
 use src\services\Repository;
 
 class RespondToLeaveType
 {
-	public function run(\stdClass $params, Repository $repo)
+	public static function insertLeaveType($params, Repository $repo)
 	{
 		$choosenLeaveType = $params->actions[0]->selected_options[0]->value;
 		$userId = $params->user->id;
 
-		$repo->insertLeaveType($choosenLeaveType, $userId);
-
-		return true;
+		return $repo->insertLeaveType($choosenLeaveType, $userId);
 	}
 }

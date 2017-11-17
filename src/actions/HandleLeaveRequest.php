@@ -13,7 +13,7 @@ use src\services\Repository;
 
 class HandleLeaveRequest
 {
-	public function run(Client $client, \stdClass $params, Repository $repo)
+	public function run(Client $client, $params, Repository $repo)
 	{
 		//DM's action to Approve/Decline leave request
 		$respText = $this->dmResponseForLeaveRequest($client, $params, $repo);
@@ -35,11 +35,11 @@ class HandleLeaveRequest
 
 	/**
 	 * @param Client $client
-	 * @param \stdClass $params
+	 * @param $params
 	 * @param Repository $repo
 	 * @return string
 	 */
-	private function dmResponseForLeaveRequest(Client $client, \stdClass $params, Repository $repo):string
+	private function dmResponseForLeaveRequest(Client $client, $params, Repository $repo):string
 	{
 		//Get DM's ID for private message channel
 		$dmId = $params->user->id;

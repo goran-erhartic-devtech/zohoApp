@@ -13,6 +13,11 @@ interface iSlackActions
 	/**
 	 * @return mixed
 	 */
+	public function welcomeMessage();
+
+	/**
+	 * @return mixed
+	 */
 	public function generateAuthToken();
 
 	/**
@@ -24,30 +29,23 @@ interface iSlackActions
 	 * @param $params
 	 * @return mixed
 	 */
-	public function respondToLeaveType(\stdClass $params);
+	public function generateModalDialog($params);
 
 	/**
 	 * @param $params
 	 * @return mixed
 	 */
-	public function generateModalDialog(\stdClass $params);
+	public function sendLeaveRequest($params);
 
 	/**
 	 * @param $params
 	 * @return mixed
 	 */
-	public function sendLeaveRequest(\stdClass $params);
+	public function handleLeaveRequest($params);
 
 	/**
-	 * @param $mail
 	 * @return mixed
 	 */
-	public function getSuperiorsIM(string $mail);
-
-	/**
-	 * @param \stdClass $params
-	 * @return mixed
-	 */
-	public function handleLeaveRequest(\stdClass $params);
+	public function unknownAction();
 
 }

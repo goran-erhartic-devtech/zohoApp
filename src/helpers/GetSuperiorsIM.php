@@ -12,7 +12,7 @@ use GuzzleHttp\Client;
 
 class GetSuperiorsIM
 {
-	public function getSuperiorsIM(Client $client, string $superiorsMail)
+	public static function getSuperiorsIM(Client $client, string $superiorsMail)
 	{
 		$getUserList = $client->request('POST', 'https://slack.com/api/users.list', [
 			'form_params' => [

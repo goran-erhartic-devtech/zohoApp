@@ -14,8 +14,19 @@ use src\helpers\TimeoutWorkaround;
 
 TimeoutWorkaround::execute();
 
-if (isset($_POST['text']) && $_POST['text'] != '') {
-	Container::getInstance()->generateAuthToken();
-} else {
-	Container::getInstance()->generateLeaveTypeDropdown();
+$command = explode(' ', $_POST['text']);
+
+switch ($command[0]) {
+	case "":
+		Container::getInstance()->welcomeMessage();
+		break;
+	case "register":
+		Container::getInstance()->generateAuthToken();
+		break;
+	case "leave":
+		Container::getInstance()->generateLeaveTypeDropdown();
+		break;
+	default:
+		Container::getInstance()->unknownAction();
+		break;
 }
