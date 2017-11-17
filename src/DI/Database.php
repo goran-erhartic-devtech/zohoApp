@@ -8,6 +8,8 @@
 
 namespace src\DI;
 
+use src\exceptions\DatabaseConnectionException;
+
 class Database
 {
 	private $db;
@@ -43,7 +45,7 @@ class Database
 			$this->db = new \PDO('mysql:host=' . $_ENV['DB_HOST'] . ';dbname=' . $_ENV['DB_NAME'], $_ENV['DB_USER'], $_ENV['DB_PASS']);
 			$this->db->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
 		} catch (\PDOException $e) {
-			echo $e->getMessage();
+			return DatabaseConnectionException::forCouldNotConnectToDB("*ERROR:* No connection could be made because the target machine actively refused it.");
 		}
 	}
 

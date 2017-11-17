@@ -8,6 +8,7 @@
 
 namespace src\services;
 
+use src\exceptions\RegistrationFailedException;
 use src\helpers\ExceptionHandler;
 use src\models\User;
 use src\DI\Database;
@@ -24,15 +25,12 @@ class Repository implements iRepository
 
 	public function checkIfTokenGenerated()
 	{
-		try {
-			$checkUser = $this->db->prepare("SELECT * from credentials WHERE userid = :userid");
-			$checkUser->bindParam(':userid', $_POST['user_id']);
-			$checkUser->execute();
-			if ($checkUser->rowCount() > 0) {
-				throw new ExceptionHandler("Token generated already");
-			}
-		} catch (ExceptionHandler $e) {
-			return $e->execute();
+		$checkUser = $this->db->prepare("SELECT * from credentials WHERE userid = :userid");
+		$checkUser->bindParam(':userid', $_POST['user_id']);
+		$checkUser->execute();
+
+		if ($checkUser->rowCount() > 0) {
+			throw new RegistrationFailedException("*INFO:* Token already exists for this user");
 		}
 	}
 
@@ -69,7 +67,7 @@ class Repository implements iRepository
 
 			return $newUser;
 		} else {
-			throw new ExceptionHandler("Hi there, looks like this is your first time running the Zoho APP. Please run this command */zoho _username password_* so I can generate a token for you.");
+			throw new RegistrationFailedException("Hi there, looks like this is your first time running the Zoho APP. Please run this command */zoho register _username password_* so I can generate a token for you.");
 		}
 	}
 

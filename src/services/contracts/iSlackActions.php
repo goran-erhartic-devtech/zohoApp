@@ -13,6 +13,11 @@ interface iSlackActions
 	/**
 	 * @return mixed
 	 */
+	public function welcomeMessage();
+
+	/**
+	 * @return mixed
+	 */
 	public function generateAuthToken();
 
 	/**
@@ -39,15 +44,14 @@ interface iSlackActions
 	public function sendLeaveRequest(\stdClass $params);
 
 	/**
-	 * @param $mail
-	 * @return mixed
-	 */
-	public function getSuperiorsIM(string $mail);
-
-	/**
 	 * @param \stdClass $params
 	 * @return mixed
 	 */
 	public function handleLeaveRequest(\stdClass $params);
+
+	/**
+	 * @return mixed
+	 */
+	public function unknownAction();
 
 }

@@ -15,7 +15,8 @@ use src\actions\GenerateModalDialog;
 use src\actions\HandleLeaveRequest;
 use src\actions\RespondToLeaveType;
 use src\actions\SendLeaveRequest;
-use src\helpers\GetSuperiorsIM;
+use src\actions\UnknownAction;
+use src\actions\WelcomeMessage;
 use src\services\contracts\iSlackActions;
 
 class SlackActions implements iSlackActions
@@ -27,6 +28,13 @@ class SlackActions implements iSlackActions
 	{
 		$this->client = new Client();
 		$this->repo = new Repository();
+	}
+
+	public function welcomeMessage()
+	{
+		$welcomeMessage = new WelcomeMessage();
+
+		return $welcomeMessage->run($this->client);
 	}
 
 	public function generateAuthToken()
@@ -64,17 +72,17 @@ class SlackActions implements iSlackActions
 		return $sendLeaveRequest->run($this->client, $params, $this->repo);
 	}
 
-	public function getSuperiorsIM(string $mail)
-	{
-		$getSuperiorsIM = new GetSuperiorsIM();
-
-		return $getSuperiorsIM->getSuperiorsIM($this->client, $mail);
-	}
-
 	public function handleLeaveRequest(\stdClass $params)
 	{
 		$handleLeaveRequest = new HandleLeaveRequest();
 
 		return $handleLeaveRequest->run($this->client, $params, $this->repo);
+	}
+
+	public function unknownAction()
+	{
+		$unknownAction = new UnknownAction();
+
+		return $unknownAction->run($this->client);
 	}
 }
