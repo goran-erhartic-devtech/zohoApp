@@ -12,12 +12,12 @@ use GuzzleHttp\Psr7\Response;
 use src\exceptions\RegistrationFailedException;
 use src\exceptions\SlackActionException;
 use src\helpers\GetSuperiorsIM;
-use src\services\Repository;
-use GuzzleHttp\Client;
+use src\services\contracts\iHttpRequests;
+use src\services\contracts\iRepository;
 
 class GenerateAuthToken
 {
-	public function run(Client $client, Repository $repo):Response
+	public function run(iHttpRequests $client, iRepository $repo):Response
 	{
 		//Get email and password from users input
 		try {
@@ -37,13 +37,7 @@ class GenerateAuthToken
 		}
 
 		//Generate Zoho token for API requests
-		$response = $client->request('POST', 'https://accounts.zoho.com/apiauthtoken/nb/create', [
-			'form_params' => [
-				'SCOPE' => 'zohopeople/peopleapi',
-				'EMAIL_ID' => $username,
-				'PASSWORD' => $password,
-			]
-		]);
+		$response = $client->generateZohoTokenForApiRequests($username, $password);
 
 		//Extract token from response string
 		$authToken = $this->extractTokenFromResponse($response);
@@ -91,28 +85,22 @@ class GenerateAuthToken
 	}
 
 	/**
-	 * @param Client $client
+	 * @param iHttpRequests $client
 	 * @return Response
 	 */
-	private function successRegistrationMessage(Client $client):Response
+	private function successRegistrationMessage(iHttpRequests $client):Response
 	{
-		return $client->request('POST', $_POST['response_url'], [
-			'body' => '{"text": "*Your token has been successfully generated! Thanks for setting up the ZohoApp :)*\nPlease continue using this app by simply entering \"_/zoho leave_\" anywhere in the chat window - it will be only visible to you"}',
-			'headers' => [
-				'Content-Type' => 'application/json',
-			]
-		]);
+		return $client->sendSuccessRegistrationMessage();
 	}
 
 	/**
-	 * @param Client $client
+	 * @param iHttpRequests $client
 	 * @param $url
 	 * @return array
 	 */
-	private function getEmployeeZohoInfoArray(Client $client, $url):array
+	private function getEmployeeZohoInfoArray(iHttpRequests $client, $url):array
 	{
-		$response = $client->request('GET', $url);
-		$employeeZohoInfo = json_decode($response->getBody()->getContents(), true)[0];
+		$employeeZohoInfo = $client->getEmployeeZohoInfoArray($url);
 
 		$employeeReportingToArray = explode(' ', $employeeZohoInfo['Reporting To']);
 //			$superiorsMail = strtolower($employeeReportingToArray[0] . '.' . $employeeReportingToArray[1] . '@devtechhroup.com');

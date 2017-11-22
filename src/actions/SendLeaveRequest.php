@@ -10,13 +10,15 @@ namespace src\actions;
 
 use src\helpers\ApproveLeaveMessage;
 use src\models\User;
+use src\services\contracts\iHttpRequests;
+use src\services\contracts\iRepository;
 use src\services\Repository;
 use GuzzleHttp\Client;
 use src\models\XMLRequestModel;
 
 class SendLeaveRequest
 {
-	public function run(Client $client, $params, Repository $repo)
+	public function run(iHttpRequests $client, $params, iRepository $repo)
 	{
 		$fromDate = $this->formatDate($params->submission->leave_from);
 		$toDate = $this->formatDate($params->submission->leave_to);
@@ -115,7 +117,7 @@ class SendLeaveRequest
 	 * @param $employee
 	 * @return string
 	 */
-	private function getLeaveName(Client $client, User $employee):string
+	private function getLeaveName(iHttpRequests $client, User $employee):string
 	{
 		//Get all types of leave that are available
 		$url = "https://people.zoho.com/people/api/leave/getLeaveTypeDetails?authtoken={$employee->getToken()}&userId={$employee->getZohoUserId()}";

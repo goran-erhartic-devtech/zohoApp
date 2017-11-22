@@ -9,58 +9,41 @@
 namespace src\actions;
 
 use GuzzleHttp\Client;
+use src\services\contracts\iHttpRequests;
+use src\services\contracts\iRepository;
 use src\services\Repository;
 
 class HandleLeaveRequest
 {
-	public function run(Client $client, $params, Repository $repo)
+	public function run(iHttpRequests $client, $params, iRepository $repo)
 	{
 		//DM's action to Approve/Decline leave request
 		$respText = $this->dmResponseForLeaveRequest($client, $params, $repo);
 
 		//Temporary message to DM telling him if the action was successful
-		$client->request('POST', 'https://slack.com/api/chat.postEphemeral', [
-			'form_params' => [
-				'token' => $_ENV['TOKEN'],
-				'channel' => $params->channel->id,
-				'text' => $respText,
-				'user' => $params->user->id,
-				'as_user' => false
-			],
-			'headers' => [
-				'Content-Type' => 'application/x-www-form-urlencoded',
-			]
-		]);
+		$client->messageDMifActionWasSuccessful($params, $respText);
 	}
 
 	/**
-	 * @param Client $client
+	 * @param iHttpRequests $client
 	 * @param $params
-	 * @param Repository $repo
+	 * @param iRepository $repo
 	 * @return string
 	 */
-	private function dmResponseForLeaveRequest(Client $client, $params, Repository $repo):string
+	private function dmResponseForLeaveRequest(iHttpRequests $client, $params, iRepository $repo):string
 	{
 		//Get DM's ID for private message channel
 		$dmId = $params->user->id;
 		$departmentManager = $repo->getUserById($dmId);
 
 		//Prepare ID of request, along with comment and DM's decision
+		$dmToken = $departmentManager->getToken();
 		$leaveRequestId = $params->submission->reqest_id;
 		$isApproved = $params->submission->is_approved;
 		$remark = $params->submission->leave_reply;
 
 		//Request to Zoho API to approve/reject leave request
-		$request = $client->request('POST', 'https://people.zoho.com/people/api/approveRecord', [
-			'form_params' => [
-				'authtoken' => $departmentManager->getToken(),
-				'pkid' => $leaveRequestId,
-				'status' => $isApproved,
-				'remarks' => $remark,
-			]
-		]);
-
-		$resp = json_decode($request->getBody()->getContents(), true)['response'];
+		$resp = $client->requestZohoApiToApproveOrRejectLeaveRequest($dmToken, $leaveRequestId, $isApproved, $remark);
 
 		//Response message that DM will recieve after accepting/rejecting leave request
 		if ($resp['message'] === "Success" && $isApproved === "1") {

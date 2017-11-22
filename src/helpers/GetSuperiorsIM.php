@@ -8,23 +8,13 @@
 
 namespace src\helpers;
 
-use GuzzleHttp\Client;
+use src\services\contracts\iHttpRequests;
 
 class GetSuperiorsIM
 {
-	public static function getSuperiorsIM(Client $client, string $superiorsMail)
+	public static function getSuperiorsIM(iHttpRequests $client, string $superiorsMail)
 	{
-		$getUserList = $client->request('POST', 'https://slack.com/api/users.list', [
-			'form_params' => [
-				'token' => $_ENV['TOKEN'],
-			],
-			'headers' => [
-				'Content-Type' => 'application/x-www-form-urlencoded',
-			]
-		]);
-
-		$allUsers = json_decode($getUserList->getBody()->getContents(), true)['members'];
-
+		$allUsers = $client->getAllUsersArray();
 		$superiorsSlackId = '';
 		foreach ($allUsers as $user) {
 			if($user['profile']['email'] === $superiorsMail){
@@ -33,16 +23,7 @@ class GetSuperiorsIM
 			}
 		}
 
-		$getIMList = $client->request('POST', 'https://slack.com/api/im.list', [
-			'form_params' => [
-				'token' => $_ENV['TOKEN'],
-			],
-			'headers' => [
-				'Content-Type' => 'application/x-www-form-urlencoded',
-			]
-		]);
-
-		$allIMs = json_decode($getIMList->getBody()->getContents(), true)['ims'];
+		$allIMs = $client->getAllIMchannels();
 		$superiorsIMid = '';
 		foreach ($allIMs as $im) {
 			if($im['user'] === $superiorsSlackId){
