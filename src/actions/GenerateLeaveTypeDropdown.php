@@ -8,7 +8,6 @@
 
 namespace src\actions;
 
-use GuzzleHttp\Client;
 use GuzzleHttp\Psr7\Response;
 use src\exceptions\RegistrationFailedException;
 use src\exceptions\SlackActionException;
@@ -16,7 +15,6 @@ use src\helpers\Dropdown;
 use src\models\User;
 use src\services\contracts\iHttpRequests;
 use src\services\contracts\iRepository;
-use src\services\Repository;
 
 class GenerateLeaveTypeDropdown
 {

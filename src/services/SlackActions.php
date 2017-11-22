@@ -8,7 +8,6 @@
 
 namespace src\services;
 
-use GuzzleHttp\Client;
 use src\actions\GenerateAuthToken;
 use src\actions\GenerateLeaveTypeDropdown;
 use src\actions\GenerateModalDialog;

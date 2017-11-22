@@ -117,6 +117,11 @@ class GuzzleHttpRequests implements iHttpRequests
 		]);
 	}
 
+	/**
+	 * @param $params
+	 * @param string $respText
+	 * @return Response
+	 */
 	public function messageDMifActionWasSuccessful($params, string $respText)
 	{
 		return $this->client->request('POST', 'https://slack.com/api/chat.postEphemeral', [
@@ -133,6 +138,13 @@ class GuzzleHttpRequests implements iHttpRequests
 		]);
 	}
 
+	/**
+	 * @param string $dmToken
+	 * @param string $leaveRequestId
+	 * @param string $isApproved
+	 * @param string $remark
+	 * @return array
+	 */
 	public function requestZohoApiToApproveOrRejectLeaveRequest(string $dmToken, string $leaveRequestId, string $isApproved, string $remark)
 	{
 		$request = $this->client->request('POST', 'https://people.zoho.com/people/api/approveRecord', [
@@ -149,6 +161,11 @@ class GuzzleHttpRequests implements iHttpRequests
 		return $resp;
 	}
 
+	/**
+	 * @param User $employee
+	 * @param string $xmlPayload
+	 * @return array
+	 */
 	public function sendLeaveRequest(User $employee, string $xmlPayload)
 	{
 		$response = $this->client->request('POST', 'https://people.zoho.com/people/api/leave/records', [
@@ -162,6 +179,12 @@ class GuzzleHttpRequests implements iHttpRequests
 		return $result;
 	}
 
+	/**
+	 * @param string $dialogResponseChannel
+	 * @param string $dialogResponseText
+	 * @param string $dialogResponseUser
+	 * @return Response
+	 */
 	public function responseMessageToSlackUser(string $dialogResponseChannel, string $dialogResponseText, string $dialogResponseUser)
 	{
 		return $this->client->request('POST', 'https://slack.com/api/chat.postEphemeral', [
@@ -178,6 +201,12 @@ class GuzzleHttpRequests implements iHttpRequests
 		]);
 	}
 
+	/**
+	 * @param User $employee
+	 * @param $params
+	 * @param string $text
+	 * @return Response
+	 */
 	public function sendPMToDM(User $employee, $params, string $text)
 	{
 		return $this->client->request('POST', 'https://slack.com/api/chat.postMessage', [
@@ -195,9 +224,12 @@ class GuzzleHttpRequests implements iHttpRequests
 		]);
 	}
 
+	/**
+	 * @return Response
+	 */
 	public function welcomeMessage()
 	{
-		$this->client->request('POST', $_POST['response_url'], [
+		return $this->client->request('POST', $_POST['response_url'], [
 			'body' => '{"text": "*INFO:* Hi, welcome to *Zoho People App*! Please use one the following actions:\n
 			*/zoho register email password* - _This action needs to be performed only once and you are good to go!_\n
 			*/zoho leave* - _This action will allow you to apply for any type of leave that is currently available for you._\n
@@ -208,9 +240,12 @@ class GuzzleHttpRequests implements iHttpRequests
 		]);
 	}
 
+	/**
+	 * @return Response
+	 */
 	public function unknownAction()
 	{
-		$this->client->request('POST', $_POST['response_url'], [
+		return $this->client->request('POST', $_POST['response_url'], [
 			'body' => '{"text": "*ERROR:* Unknown action - Please use one the following actions:\n
 			*/zoho register email password* - _This action needs to be performed only once and you are good to go!_\n
 			*/zoho leave* - _This action will allow you to apply for any type of leave that is currently available for you._\n"}',
@@ -220,6 +255,9 @@ class GuzzleHttpRequests implements iHttpRequests
 		]);
 	}
 
+	/**
+	 * @return array
+	 */
 	public function getAllUsersArray()
 	{
 		$getUserList = $this->client->request('POST', 'https://slack.com/api/users.list', [
@@ -236,6 +274,9 @@ class GuzzleHttpRequests implements iHttpRequests
 		return $allUsers;
 	}
 
+	/**
+	 * @return array
+	 */
 	public function getAllIMchannels()
 	{
 		$getIMList = $this->client->request('POST', 'https://slack.com/api/im.list', [

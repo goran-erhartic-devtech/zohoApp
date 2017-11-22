@@ -9,7 +9,6 @@
 namespace src\helpers;
 
 use src\services\contracts\iRepository;
-use src\services\Repository;
 
 class RespondToLeaveType
 {

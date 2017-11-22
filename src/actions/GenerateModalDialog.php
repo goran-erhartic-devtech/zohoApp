@@ -8,7 +8,6 @@
 
 namespace src\actions;
 
-use GuzzleHttp\Client;
 use GuzzleHttp\Psr7\Response;
 use src\helpers\Dialog;
 use src\services\contracts\iHttpRequests;
