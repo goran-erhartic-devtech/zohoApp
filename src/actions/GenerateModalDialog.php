@@ -11,26 +11,19 @@ namespace src\actions;
 use GuzzleHttp\Client;
 use GuzzleHttp\Psr7\Response;
 use src\helpers\Dialog;
+use src\services\contracts\iHttpRequests;
 
 class GenerateModalDialog
 {
 	private $generatedDialog;
 
-	public function run(Client $client, $params)
+	public function run(iHttpRequests $client, $params)
 	{
 		$token = $_ENV['TOKEN'];
-
 		$actionTriggerId = $params->trigger_id;
-
 		$dialog = $this->chooseDialogType($params, $client);
 
-		$client->request('POST', 'https://slack.com/api/dialog.open', [
-			'form_params' => [
-				'token' => $token,
-				'trigger_id' => $actionTriggerId,
-				'dialog' => $dialog,
-			]
-		]);
+		$client->generateModalDialog($token, $actionTriggerId, $dialog);
 	}
 
 	/**
@@ -58,23 +51,19 @@ class GenerateModalDialog
 
 	/**
 	 * Edit DM's approve/decline message after clicking on button
-	 * @param Client $client
+	 * @param iHttpRequests $client
 	 * @param $params
 	 * @param $isApproved
 	 * @return Response
 	 */
-	private function editButtonMessage(Client $client, $params, $isApproved):Response
+	private function editButtonMessage(iHttpRequests $client, $params, $isApproved):Response
 	{
 		$message = $isApproved ? ":white_check_mark: request approved " : ":x: request declined";
 		$payload = $params->original_message;
 		$payload->attachments[0]->actions = null;
 		$payload->attachments[0]->text .= "\n{$message}";
 		$body = json_encode($payload);
-		return $client->request('POST', $params->response_url, [
-			'body' => $body,
-			'headers' => [
-				'Content-Type' => 'application/json',
-			]
-		]);
+
+		return $client->editButtonMessage($params, $body);
 	}
 }

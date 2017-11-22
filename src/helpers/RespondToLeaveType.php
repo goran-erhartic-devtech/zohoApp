@@ -8,11 +8,12 @@
 
 namespace src\helpers;
 
+use src\services\contracts\iRepository;
 use src\services\Repository;
 
 class RespondToLeaveType
 {
-	public static function insertLeaveType($params, Repository $repo)
+	public static function insertLeaveType($params, iRepository $repo)
 	{
 		$choosenLeaveType = $params->actions[0]->selected_options[0]->value;
 		$userId = $params->user->id;

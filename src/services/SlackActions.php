@@ -17,6 +17,8 @@ use src\helpers\RespondToLeaveType;
 use src\actions\SendLeaveRequest;
 use src\actions\UnknownAction;
 use src\actions\WelcomeMessage;
+use src\services\contracts\iHttpRequests;
+use src\services\contracts\iRepository;
 use src\services\contracts\iSlackActions;
 
 class SlackActions implements iSlackActions
@@ -24,10 +26,10 @@ class SlackActions implements iSlackActions
 	private $client;
 	private $repo;
 
-	public function __construct()
+	public function __construct(iHttpRequests $client, iRepository $repo)
 	{
-		$this->client = new Client();
-		$this->repo = new Repository();
+		$this->client = $client;
+		$this->repo = $repo;
 	}
 
 	public function welcomeMessage()

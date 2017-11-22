@@ -9,6 +9,8 @@
 namespace src\DI;
 
 use Dotenv\Dotenv;
+use src\services\GuzzleHttpRequests;
+use src\services\Repository;
 use src\services\SlackActions;
 
 class Container
@@ -22,7 +24,10 @@ class Container
 			$dotenv = new Dotenv(__DIR__ . '/../../');
 			$dotenv->load();
 
-			self::$instance = new SlackActions();
+			$repo = new Repository();
+			$client = new GuzzleHttpRequests();
+
+			self::$instance = new SlackActions($client, $repo);
 		}
 
 		return self::$instance;

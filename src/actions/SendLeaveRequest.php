@@ -10,13 +10,13 @@ namespace src\actions;
 
 use src\helpers\ApproveLeaveMessage;
 use src\models\User;
-use src\services\Repository;
-use GuzzleHttp\Client;
+use src\services\contracts\iHttpRequests;
+use src\services\contracts\iRepository;
 use src\models\XMLRequestModel;
 
 class SendLeaveRequest
 {
-	public function run(Client $client, $params, Repository $repo)
+	public function run(iHttpRequests $client, $params, iRepository $repo)
 	{
 		$fromDate = $this->formatDate($params->submission->leave_from);
 		$toDate = $this->formatDate($params->submission->leave_to);
@@ -38,52 +38,22 @@ class SendLeaveRequest
 		$xmlPayload = $XML->createXMLData();
 
 		//Send leave request
-		$response = $client->request('POST', 'https://people.zoho.com/people/api/leave/records', [
-			'form_params' => [
-				'authtoken' => $employee->getToken(),
-				'xmlData' => $xmlPayload,
-			]
-		]);
-		$result = json_decode($response->getBody()->getContents(), true);
+		$result = $client->sendLeaveRequest($employee, $xmlPayload);
 
 		$dialogResponseChannel = $params->channel->id;
 		$dialogResponseText = $this->getResponseText($result);
 		$dialogResponseUser = $params->user->id;
 
 		//Response message to Slack user
-		$client->request('POST', 'https://slack.com/api/chat.postEphemeral', [
-			'form_params' => [
-				'token' => $_ENV['TOKEN'],
-				'channel' => $dialogResponseChannel,
-				'text' => $dialogResponseText,
-				'user' => $dialogResponseUser,
-				'as_user' => false
-			],
-			'headers' => [
-				'Content-Type' => 'application/x-www-form-urlencoded',
-			]
-		]);
+		$client->responseMessageToSlackUser($dialogResponseChannel, $dialogResponseText, $dialogResponseUser);
 
 		//Request to DM
 		if (isset($result['pkId'])) {
 			$leaveName = $this->getLeaveName($client, $employee);
-
 			$text = ApproveLeaveMessage::generateMessage($params, $leaveName, $result['pkId']);
 
 			//Send PM to DM
-			$client->request('POST', 'https://slack.com/api/chat.postMessage', [
-				'form_params' => [
-					'token' => $_ENV['TOKEN'],
-					'channel' => $employee->getReportingTo(),
-					'text' => "New leave request from: {$params->user->name}",
-					'attachments' => "[{$text}]",
-					'username' => "ZohoApp",
-					'as_user' => false
-				],
-				'headers' => [
-					'Content-Type' => 'application/x-www-form-urlencoded',
-				]
-			]);
+			$client->sendPMToDM($employee, $params, $text);
 		}
 	}
 
@@ -110,17 +80,15 @@ class SendLeaveRequest
 	}
 
 	/**
-	 * Get name of the selected Leave to send to DM
-	 * @param Client $client
-	 * @param $employee
+	 * @param iHttpRequests $client
+	 * @param User $employee
 	 * @return string
 	 */
-	private function getLeaveName(Client $client, User $employee):string
+	private function getLeaveName(iHttpRequests $client, User $employee):string
 	{
 		//Get all types of leave that are available
 		$url = "https://people.zoho.com/people/api/leave/getLeaveTypeDetails?authtoken={$employee->getToken()}&userId={$employee->getZohoUserId()}";
-		$response = $client->request('GET', $url);
-		$allLeaves = json_decode($response->getBody()->getContents())->response->result;
+		$allLeaves = $client->getAllLeaveTypes($url);
 
 		//Get name of applied leave
 		$leaveName = '';
@@ -130,9 +98,9 @@ class SendLeaveRequest
 				break;
 			}
 		}
+
 		return $leaveName;
 	}
-
 
 	/**
 	 * Format the date so it goes from (example) 5/8/2018 to 05-08-2018
@@ -143,7 +111,6 @@ class SendLeaveRequest
 	{
 		$fixDate = str_replace('/', '-', $date);
 		$explodedDate = explode('-', $fixDate);
-
 
 		$day = strlen($explodedDate[0]) === 2 ? $explodedDate[0] : 0 . $explodedDate[0];
 		$month = strlen($explodedDate[1]) === 2 ? $explodedDate[1] : 0 . $explodedDate[1];
