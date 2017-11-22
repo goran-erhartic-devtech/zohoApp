@@ -10,6 +10,7 @@ namespace src\services;
 
 use GuzzleHttp\Client;
 use GuzzleHttp\Psr7\Response;
+use src\models\User;
 use src\services\contracts\iHttpRequests;
 
 class GuzzleHttpRequests implements iHttpRequests
@@ -148,24 +149,50 @@ class GuzzleHttpRequests implements iHttpRequests
 		return $resp;
 	}
 
-	public function sendLeaveRequest()
+	public function sendLeaveRequest(User $employee, string $xmlPayload)
 	{
-		// TODO: Implement sendLeaveRequest() method.
+		$response = $this->client->request('POST', 'https://people.zoho.com/people/api/leave/records', [
+			'form_params' => [
+				'authtoken' => $employee->getToken(),
+				'xmlData' => $xmlPayload,
+			]
+		]);
+		$result = json_decode($response->getBody()->getContents(), true);
+
+		return $result;
 	}
 
-	public function responseMessageToSlackUser()
+	public function responseMessageToSlackUser(string $dialogResponseChannel, string $dialogResponseText, string $dialogResponseUser)
 	{
-		// TODO: Implement responseMessageToSlackUser() method.
+		return $this->client->request('POST', 'https://slack.com/api/chat.postEphemeral', [
+			'form_params' => [
+				'token' => $_ENV['TOKEN'],
+				'channel' => $dialogResponseChannel,
+				'text' => $dialogResponseText,
+				'user' => $dialogResponseUser,
+				'as_user' => false
+			],
+			'headers' => [
+				'Content-Type' => 'application/x-www-form-urlencoded',
+			]
+		]);
 	}
 
-	public function sendPMToDM()
+	public function sendPMToDM(User $employee, $params, string $text)
 	{
-		// TODO: Implement sendPMToDM() method.
-	}
-
-	public function allTypesOfleaveAvailable()
-	{
-		// TODO: Implement allTypesOfleaveAvailable() method.
+		return $this->client->request('POST', 'https://slack.com/api/chat.postMessage', [
+			'form_params' => [
+				'token' => $_ENV['TOKEN'],
+				'channel' => $employee->getReportingTo(),
+				'text' => "New leave request from: {$params->user->name}",
+				'attachments' => "[{$text}]",
+				'username' => "ZohoApp",
+				'as_user' => false
+			],
+			'headers' => [
+				'Content-Type' => 'application/x-www-form-urlencoded',
+			]
+		]);
 	}
 
 	public function welcomeMessage()

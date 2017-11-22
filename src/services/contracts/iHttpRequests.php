@@ -8,6 +8,8 @@
 
 namespace src\services\contracts;
 
+use src\models\User;
+
 interface iHttpRequests
 {
 	public function generateZohoTokenForApiRequests(string $username, string $password);
@@ -28,13 +30,11 @@ interface iHttpRequests
 
 	public function requestZohoApiToApproveOrRejectLeaveRequest(string $dmToken, string $leaveRequestId, string $isApproved, string $remark);
 
-	public function sendLeaveRequest();
+	public function sendLeaveRequest(User $employee, string $xmlPayload);
 
-	public function responseMessageToSlackUser();
+	public function responseMessageToSlackUser(string $dialogResponseChannel, string $dialogResponseText, string $dialogResponseUser);
 
-	public function sendPMToDM();
-
-	public function allTypesOfleaveAvailable(); //!!
+	public function sendPMToDM(User $employee, $params, string $text);
 
 	public function unknownAction();
 

@@ -14,6 +14,6 @@ class WelcomeMessage
 {
 	public function run(iHttpRequests $client)
 	{
-		$client::welcomeMessage();
+		$client->welcomeMessage();
 	}
 }
